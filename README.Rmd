@@ -1,0 +1,319 @@
+---
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE
+)
+```
+
+
+<!-- Este .md fue generado a partir del .Rmd homónimo. Edítese el .Rmd -->
+
+# ETL de la base de datos de ODK sobre colectas de campo e identificación de hormigas en el campus de la UASD para la asignatura "Biogeografía", licenciatura en Geografía, UASD
+
+## Acceso a servidor
+
+```{bash, eval=F}
+#En PC local
+ssh jr@geografiafisica.org
+#En ODK aggregate server
+sudo -i -u postgres
+psql
+##Cambiar path de usuario postgres en aggregate (sólo una vez):
+###ALTER ROLE postgres SET search_path TO aggregate,public;
+###\q
+###psql
+```
+
+## Generación de consultas y exportar a CSV
+
+```{sql, eval=F}
+\c aggregate
+/*HABITAT*/
+COPY (
+SELECT "CODIGO" codigomuestra, "PARCELA" parcela, "_CREATOR_URI_USER" usuariohab,
+ "_CREATION_DATE" fechacreacionhab, "_SUBMISSION_DATE" fechaenviohab, "_URI" idodkhabitat,
+ "HORAINICIO" horainicio, "HORAFINAL" horafinal, "COORDENADAID_LNG" longitud, "COORDENADAID_LAT" latitud,
+ "COORDENADAID_ALT" elevacion, "COORDENADAID_ACC" precisioncoords, "LOCALIDADID" localidad,
+ "INFOAMB_DISTANCIABASURA" distanciaabasura, "INFOAMB_DISTANCIAAGUA" distanciaagua,
+ "INFOAMB_DISTANCIACAMINOSCALLES" distanciavias, "INFOAMB_ACTIVIDADPERSONAS" actividadpersonas,
+ "ACTIVIDADCEBOSG_CEBO1" actividadcebo1, "ACTIVIDADCEBOSG_CEBO2" actividadcebo2,
+ "ACTIVIDADCEBOSG_CEBO3" actividadcebo3, "ACTIVIDADCEBOSG_CEBO4" actividadcebo4,
+ "COLECTAREALIZADAENFECHA" fechacolecta, "COLECTORESG_OTRASPERSONAS" otroscolectores,
+ "OBSERVACIONES" observaciones, "PLANTAS" plantas, 
+ idparentalcolec, siglascolectores,
+ idparentaltiposdecebo, tiposdecebo,
+ idparentalcebosbajo, cebosbajo,
+ idparentalcebossobre, cebossobre,
+ idparentalcebosotrosele, cebosotrosele
+ FROM "HORMIGASUASDHABITAT_CORE" habitatcore
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalcolec, string_agg("VALUE", ',') siglascolectores
+ FROM  "HORMIGASUASDHABITAT_COLECTORESG_COLECTORES"
+ GROUP BY idparentalcolec) AS tcolectores
+ ON tcolectores.idparentalcolec=habitatcore."_URI"
+ INNER JOIN (SELECT "_PARENT_AURI" idparentaltiposdecebo, string_agg("VALUE", ',') tiposdecebo
+ FROM  "HORMIGASUASDHABITAT_INFOAMB_TIPOSDECEBO"
+ GROUP BY idparentaltiposdecebo) AS ttiposdecebo
+ ON ttiposdecebo.idparentaltiposdecebo=habitatcore."_URI"
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalcebosbajo, string_agg("VALUE", ',') cebosbajo
+ FROM  "HORMIGASUASDHABITAT_INFOAMB_CEBOSBAJO"
+ GROUP BY idparentalcebosbajo) AS tcebosbajo
+ ON tcebosbajo.idparentalcebosbajo=habitatcore."_URI"
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalcebossobre, string_agg("VALUE", ',') cebossobre
+ FROM  "HORMIGASUASDHABITAT_INFOAMB_CEBOSSOBRE"
+ GROUP BY idparentalcebossobre) AS tcebossobre
+ ON tcebossobre.idparentalcebossobre=habitatcore."_URI"
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalcebosotrosele, string_agg("VALUE", ',') cebosotrosele
+ FROM  "HORMIGASUASDHABITAT_INFOAMB_CEBOSOTROSELE"
+ GROUP BY idparentalcebosotrosele) AS tcebosotrosele
+ ON tcebosotrosele.idparentalcebosotrosele=habitatcore."_URI")
+ TO '/tmp/colecta_habitat.csv' DELIMITER ',' NULL AS 'NULL' csv header;
+
+/*NIDOS*/
+COPY (
+SELECT "CODIGO" codigomuestra, "PARCELA" parcela, "_CREATOR_URI_USER" usuarionid,
+ "_CREATION_DATE" fechacreacionnid, "_SUBMISSION_DATE" fechaenvionid, "_URI" idodknidos,
+ "HORA" horainicio, "COORDENADAID_LNG" longitud, "COORDENADAID_LAT" latitud,
+ "COORDENADAID_ALT" elevacion, "COORDENADAID_ACC" precisioncoords, "LOCALIDADID" localidad,
+ "INFOAMB_DISTANCIABASURA" distanciaabasura, "INFOAMB_DISTANCIAAGUA" distanciaagua,
+ "INFOAMB_DISTANCIACAMINOSCALLES" distanciavias,
+ "COLECTAREALIZADAENFECHA" fechacolecta, "COLECTORESG_OTRASPERSONAS" otroscolectores,
+ "OBSERVACIONES" observaciones, "PLANTAS" plantas, 
+ idparentalcolec, siglascolectores
+ FROM "HORMIGASUASDNIDOS_CORE" habitatcore
+ LEFT JOIN (SELECT "_PARENT_AURI" idparentalcolec, string_agg("VALUE", ',') siglascolectores
+ FROM  "HORMIGASUASDNIDOS_COLECTORESG_COLECTORES"
+ GROUP BY idparentalcolec) AS tcolectores
+ ON tcolectores.idparentalcolec=habitatcore."_URI")
+ TO '/tmp/colecta_nidos.csv' DELIMITER ',' NULL AS 'NULL' csv header;
+
+/*IDENTIFICACIONES*/
+COPY (
+SELECT "DATOSCOLECTA_CODIGO" codigomuestra, "DATOSCOLECTA_PARCELA" parcela, "_CREATOR_URI_USER" usuarioident,
+ "_CREATION_DATE" fechacreacionident, "_SUBMISSION_DATE" fechaenvioident, "_URI" idodkident,
+ "DATOSCOLECTA_IDENTIFICACIONREALIZADAENFECHA" fechaidentificacion,
+ identificadores, "DATOSCOLECTA_OTROSIDENTIFICADORES" otrosidentificadores,
+ idparentalidentificaciones, identificaciones
+ FROM "HORMIGASUASDID_CORE" identificacionescore
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalidentificadores, string_agg("VALUE", ',') identificadores
+ FROM  "HORMIGASUASDID_DATOSCOLECTA_IDENTIFICACIONREALIZADAPOR"
+ GROUP BY idparentalidentificadores) AS tidentificadores
+ ON tidentificadores.idparentalidentificadores=identificacionescore."_URI"
+ INNER JOIN (SELECT "_PARENT_AURI" idparentalidentificaciones, string_agg(distinct "ESPECIEID", ',') identificaciones
+ FROM  "HORMIGASUASDID_ESPECIES"
+ GROUP BY idparentalidentificaciones) AS tidentificaciones
+ ON tidentificaciones.idparentalidentificaciones=identificacionescore."_URI") 
+ TO '/tmp/identificaciones.csv' DELIMITER ',' NULL AS 'NULL' csv header;
+```
+
+## Archivos desde servidor a cliente local
+
+```{bash, eval=F}
+cd /home/jr/Documentos/clases_UASD/201902/biogeografia/datos-hormigas-campus-uasd/buffer
+scp jr@geografiafisica.org:/tmp/*.csv .
+```
+
+## Lectura en R, importar
+
+```{r}
+library(tidyverse)
+colhab <- read_csv('buffer/colecta_habitat.csv')
+colnid <- read_csv('buffer/colecta_nidos.csv')
+ident <- read_csv('buffer/identificaciones.csv')
+```
+
+## Eliminar formularios de prueba
+
+```{r}
+colhab <- colhab %>% filter(!grepl('PROBANDO', observaciones)) %>%
+  filter(!grepl('jimenezsosa', usuariohab))
+colnid <- colnid %>% filter(!grepl('Probando', observaciones))
+
+View(colhab %>% arrange(usuariohab, codigomuestra))
+View(colnid %>% arrange(usuarionid, codigomuestra))
+View(ident)
+source('ver_datos_usuario_habitat.R')
+source('ver_datos_usuario_nidos.R')
+```
+
+## Bidelkis
+
+```{r}
+verhab(x='bidelk')
+#Parcela 126 no aparece en ident. Quizá no había hormigas en ella.
+#Corrección error codigomuestra
+ident <- ident %>%
+  mutate(codigomuestra = ifelse(codigomuestra=='20190927B2'&grepl('bidelk', usuarioident), '20190928B2', codigomuestra))
+#Visualizar resultado
+View(colhab %>% filter(grepl('bidelk', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('bidelk', usuarioident))))
+```
+
+## Emma
+
+```{r}
+verhab(x='emdil')
+#¡NADA QUE CORREGIR EN LOS CÓDIGOS DE MUESTRAS!
+#Corrigiendo la fecha de identificación, a petición de la dueña de los datos
+ident <- ident %>%
+  mutate(fechaidentificacion = if_else(codigomuestra=='20191014M07'&grepl('emdil', usuarioident), as_date('2019-10-17'), as_date(fechaidentificacion)))
+#Visualizar resultado
+View(colhab %>% filter(grepl('emdil', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('emdil', usuarioident))))
+```
+
+## Jorge
+
+```{r}
+verhab(x='jorge')
+#No hay datos de identificación subidos a ODK
+#Visualizar resultado
+View(colhab %>% filter(grepl('jorge', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('jorge', usuarioident))))
+```
+
+## Miguel
+
+```{r}
+verhab(x='mangoland')
+#Eliminar los registros "otra" de la tabla de identificación, pues se trata de muestras sin ocurrencias. Eliminar también registro duplicado con codigomuestra "m1"
+colhab <- colhab %>% mutate(
+  parcela = case_when(
+    codigomuestra == 'H20191012m2' & grepl('mangoland', usuariohab) ~ 'p107',
+    codigomuestra == 'H20191012m4' & grepl('mangoland', usuariohab) ~ 'p104',
+    codigomuestra == 'H20191012m5' & grepl('mangoland', usuariohab) ~ 'p16',
+    codigomuestra == 'H20191012m6' & grepl('mangoland', usuariohab) ~ 'p28',
+    codigomuestra == 'H20191012m7' & grepl('mangoland', usuariohab) ~ 'p178',
+    TRUE ~ parcela
+  ))
+ident <- ident %>% filter(
+  !(grepl('mangoland', usuarioident) &
+    grepl('H20191012m4|H20191013m9|H20191013m11|^m1$', codigomuestra)))
+#Corregir coordenada
+colhab <- colhab %>% mutate(
+  longitud = case_when(
+    codigomuestra == 'H20190914m1' & grepl('mangoland', usuariohab) ~ -69.91789,
+    codigomuestra == 'H20191012m3' & grepl('mangoland', usuariohab) ~ -69.92021,
+    TRUE ~ longitud
+  ),
+  latitud = case_when(
+    codigomuestra == 'H20190914m1' & grepl('mangoland', usuariohab) ~ 18.46009,
+    codigomuestra == 'H20191012m3' & grepl('mangoland', usuariohab) ~ 18.46128,
+    TRUE ~ latitud
+  )
+)
+#Visualizar resultado
+View(colhab %>% filter(grepl('mangoland', usuariohab)) %>% 
+  left_join(ident %>% filter(grepl('mangoland', usuarioident))))
+```
+
+## Dahiana
+
+```{r}
+vernid(x='dahiana', exportar = T)
+colnid <- colnid %>% mutate(
+  codigomuestra = case_when(
+    idodknidos == 'uuid:99349817-83d2-48e4-b10b-22618fabe91b' & grepl('dahiana', usuarionid) ~ 'p1m2',
+    idodknidos == 'uuid:97dc8d29-2377-452e-9d6b-b2511798566d' & grepl('dahiana', usuarionid) ~ 'p1m3',
+    idodknidos == 'uuid:0b77bc0c-b77f-4937-962b-67ba37721453' & grepl('dahiana', usuarionid) ~ 'p25m3',
+    idodknidos == 'uuid:cb1cf13b-5c4e-4069-8263-24673c61d344' & grepl('dahiana', usuarionid) ~ 'p25m2',
+    TRUE ~ codigomuestra),
+  parcela = case_when(
+    idodknidos == 'uuid:0b77bc0c-b77f-4937-962b-67ba37721453' & grepl('dahiana', usuarionid) ~ 'p25',
+    TRUE ~ parcela))
+ident <- ident %>% mutate(
+  codigomuestra = case_when(
+    idodkident == 'uuid:e099700b-ba60-47da-b18a-3306c34a5416' & grepl('dahiana', usuarioident) ~ 'p10m2',
+    idodkident == 'uuid:00fc68f2-ff88-471f-9012-502c126e3af6' & grepl('dahiana', usuarioident) ~ 'p25m1',
+    idodkident == 'uuid:ee61b671-fd14-48d1-9843-3268edf24de8' & grepl('dahiana', usuarioident) ~ 'p27m1',
+    idodkident == 'uuid:1e2128c5-fbb9-4955-8f5a-0f879635ff31' & grepl('dahiana', usuarioident) ~ 'p70m1',
+    idodkident == 'uuid:512ed2f7-effc-4ea5-a914-1f28a75ccf2e' & grepl('dahiana', usuarioident) ~ 'p70m2',
+    idodkident == 'uuid:5ebecff3-7640-4105-b4d1-d42c5b9aa308' & grepl('dahiana', usuarioident) ~ 'p148m1',
+    TRUE ~ codigomuestra),
+  parcela = case_when(
+    idodkident == 'uuid:5ebecff3-7640-4105-b4d1-d42c5b9aa308' & grepl('dahiana', usuarioident) ~ 'p148',
+    TRUE ~ parcela))
+
+colnid <- colnid %>% mutate(
+  codigomuestra = ifelse(grepl('dahiana', usuarionid), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
+ident <- ident %>% mutate(
+  codigomuestra = ifelse(grepl('dahiana', usuarioident), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
+#Varias discrepancias en códigos de muestras entre ambos formularios
+#Visualizar resultado
+View(colnid %>% filter(grepl('dahiana', usuarionid)) %>%
+  left_join(ident %>% filter(grepl('dahiana', usuarioident))))
+```
+
+## Enrique
+
+```{r}
+vernid(x='enrique', exportar = T)
+colnid <- colnid %>% mutate(
+  codigomuestra = ifelse(grepl('enrique', usuarionid), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
+ident <- ident %>% mutate(
+  codigomuestra = ifelse(grepl('enrique', usuarioident), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
+colnid <- colnid %>% mutate(
+  codigomuestra = case_when(
+    codigomuestra == 'PM86M1' & grepl('enrique', usuarionid) ~ 'PN86M1',
+    grepl('P2|P42', codigomuestra) & grepl('enrique', usuarionid) ~ gsub('P', 'PN', codigomuestra),
+    TRUE ~ codigomuestra
+  ))
+ident <- ident %>% mutate(
+  codigomuestra = case_when(
+    codigomuestra == '166M4' & grepl('enrique', usuarioident) ~ 'PN166M4',
+    TRUE ~ codigomuestra
+  ))
+#Visualizar resultado
+View(colnid %>% filter(grepl('enrique', usuarionid)) %>%
+  left_join(ident %>% filter(grepl('enrique', usuarioident)), by = 'codigomuestra'))
+```
+
+## Kesia
+
+```{r}
+vernid(x='maritza', exportar = F)
+#Visualizar resultado
+View(colnid %>% filter(grepl('maritza', usuarionid)) %>%
+  left_join(ident %>% filter(grepl('maritza', usuarioident))))
+```
+
+
+
+## Crear copia de seguridad:
+
+```{bash, eval=F}
+#En ODK aggregate server
+cd /tmp
+sudo -i -u postgres
+pg_dump aggregate > `date "+%Y%m%d"`
+exit
+zip `date "+%Y%m%d"`.zip `date "+%Y%m%d"`
+#En PC local
+scp jr@geografiafisica.org:/tmp/`date "+%Y%m%d"`.zip .
+
+```
+
+# Crear copia de BD en PC local
+
+```{bash, eval=F}
+#Borrar BD anterior:
+sudo -i -u postgres
+dropdb aggregatedo
+#Crear nueva
+createdb aggregatedo
+#Copiar nueva
+unzip `date "+%Y%m%d"`
+psql -U jr -d aggregatedo -f `date "+%Y%m%d"`
+#Permisos
+sudo -i -u postgres
+# Postgres:
+## ALTER ROLE jr SET search_path TO aggregate, public;
+## Solo una vez: ALTER ROLE jr WITH SUPERUSER 
+## \q
+exit
+psql -U jr -d aggregatedo
+```
