@@ -277,6 +277,11 @@ View(colnid %>% filter(grepl('enrique', usuarionid)) %>%
 ```{r}
 vernid(x='maritza', exportar = F)
 #Visualizar resultado
+colnid <- colnid %>% mutate(
+  parcela = case_when(
+    idodknidos == 'uuid:da95c62d-7bf9-4dbf-863f-3f301b308755' & grepl('maritza', usuarionid) ~ 'p106',
+    TRUE ~ parcela
+  ))
 View(colnid %>% filter(grepl('maritza', usuarionid)) %>%
   left_join(ident %>% filter(grepl('maritza', usuarioident))))
 ```
