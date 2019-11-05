@@ -6,20 +6,21 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  collapse=TRUE
+  collapse=TRUE,
+  eval = F
 )
 ```
 
 
 <!-- Este .md fue generado a partir del .Rmd homónimo. Edítese el .Rmd -->
 
-# ETL de la base de datos de ODK sobre colectas de campo e identificación de hormigas en el campus de la UASD para la asignatura "Biogeografía", licenciatura en Geografía, UASD
+# Extraer, transformar y cargar (ETL) base de datos de ODK sobre colectas de campo e identificación de hormigas en el campus de la UASD para la asignatura "Biogeografía", semestre 2019-02, licenciatura en Geografía, UASD
 
 ## Acceso a servidor
 
-```{bash, eval=F}
+```{bash, eval = F}
 #En PC local
-ssh jr@geografiafisica.org
+ssh <USUARIO>@<SERVIDOR>
 #En ODK aggregate server
 sudo -i -u postgres
 psql
@@ -31,7 +32,7 @@ psql
 
 ## Generación de consultas y exportar a CSV
 
-```{sql, eval=F}
+```{sql, eval = F}
 \c aggregate
 /*HABITAT*/
 COPY (
@@ -112,18 +113,24 @@ SELECT "DATOSCOLECTA_CODIGO" codigomuestra, "DATOSCOLECTA_PARCELA" parcela, "_CR
 
 ## Archivos desde servidor a cliente local
 
-```{bash, eval=F}
-cd /home/jr/Documentos/clases_UASD/201902/biogeografia/datos-hormigas-campus-uasd/buffer
-scp jr@geografiafisica.org:/tmp/*.csv .
+```{bash, eval = F}
+cd <CARPETA PARA ALOJAR LOS .CSV PROCEDENTES DEL SERVIDOR>
+scp <USUARIO>@<SERVIDOR>:/tmp/*.csv .
+```
+
+## Paquetes
+
+```{r, eval = T}
+library(tidyverse)
 ```
 
 ## Lectura en R, importar
 
 ```{r}
-library(tidyverse)
 colhab <- read_csv('buffer/colecta_habitat.csv')
 colnid <- read_csv('buffer/colecta_nidos.csv')
 ident <- read_csv('buffer/identificaciones.csv')
+nomlat <- read_csv('equivalencia_etiqueta_nombre_latino.csv')
 ```
 
 ## Eliminar formularios de prueba
@@ -132,15 +139,17 @@ ident <- read_csv('buffer/identificaciones.csv')
 colhab <- colhab %>% filter(!grepl('PROBANDO', observaciones)) %>%
   filter(!grepl('jimenezsosa', usuariohab))
 colnid <- colnid %>% filter(!grepl('Probando', observaciones))
-
 View(colhab %>% arrange(usuariohab, codigomuestra))
 View(colnid %>% arrange(usuarionid, codigomuestra))
 View(ident)
 source('ver_datos_usuario_habitat.R')
 source('ver_datos_usuario_nidos.R')
+source('ver_exportar_tablas.R')
 ```
 
-## Bidelkis
+## Hábitat
+
+### Bidelkis
 
 ```{r}
 verhab(x='bidelk')
@@ -149,11 +158,12 @@ verhab(x='bidelk')
 ident <- ident %>%
   mutate(codigomuestra = ifelse(codigomuestra=='20190927B2'&grepl('bidelk', usuarioident), '20190928B2', codigomuestra))
 #Visualizar resultado
-View(colhab %>% filter(grepl('bidelk', usuariohab)) %>%
-  left_join(ident %>% filter(grepl('bidelk', usuarioident))))
+bidelkis <- colhab %>% filter(grepl('bidelk', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('bidelk', usuarioident)))
+verexp(bidelkis)
 ```
 
-## Emma
+### Emma
 
 ```{r}
 verhab(x='emdil')
@@ -162,21 +172,23 @@ verhab(x='emdil')
 ident <- ident %>%
   mutate(fechaidentificacion = if_else(codigomuestra=='20191014M07'&grepl('emdil', usuarioident), as_date('2019-10-17'), as_date(fechaidentificacion)))
 #Visualizar resultado
-View(colhab %>% filter(grepl('emdil', usuariohab)) %>%
-  left_join(ident %>% filter(grepl('emdil', usuarioident))))
+emma <- colhab %>% filter(grepl('emdil', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('emdil', usuarioident)))
+verexp(emma)
 ```
 
-## Jorge
+### Jorge
 
 ```{r}
 verhab(x='jorge')
 #No hay datos de identificación subidos a ODK
 #Visualizar resultado
-View(colhab %>% filter(grepl('jorge', usuariohab)) %>%
-  left_join(ident %>% filter(grepl('jorge', usuarioident))))
+jorge <- colhab %>% filter(grepl('jorge', usuariohab)) %>%
+  left_join(ident %>% filter(grepl('jorge', usuarioident)))
+verexp(jorge)
 ```
 
-## Miguel
+### Miguel
 
 ```{r}
 verhab(x='mangoland')
@@ -207,14 +219,40 @@ colhab <- colhab %>% mutate(
   )
 )
 #Visualizar resultado
-View(colhab %>% filter(grepl('mangoland', usuariohab)) %>% 
-  left_join(ident %>% filter(grepl('mangoland', usuarioident))))
+miguel <- colhab %>% filter(grepl('mangoland', usuariohab)) %>% 
+  left_join(ident %>% filter(grepl('mangoland', usuarioident)))
+verexp(miguel)
 ```
 
-## Dahiana
+### Todas muestras de hábitat
+
+```{r}
+todos_los_habitat <- bind_rows(bidelkis, emma, jorge, miguel)
+saveRDS(todos_los_habitat, 'export/tabla_todos_los_habitat.RDS')
+verexp(todos_los_habitat)
+mcpooledhabitat <- todos_los_habitat %>%
+  separate_rows(identificaciones, sep = ',') %>%
+  left_join(nomlat) %>% dplyr::select(-identificaciones) %>% 
+  mutate(genero = word(`nombre latino`, 1), epiteto = word(`nombre latino`, 2)) %>% 
+  mutate(
+    `nombre latino` = ifelse(genero=='reina(s)', genero,
+                             ifelse(is.na(genero), NA, paste(genero, 'sp.')))) %>% 
+  dplyr::select(parcela, `nombre latino`) %>%
+  filter(!grepl('reina', `nombre latino`)) %>% 
+  distinct() %>% mutate(n=1) %>%  spread(`nombre latino`, n, fill = 0) %>%
+  select(-`<NA>`) %>% 
+  column_to_rownames('parcela')
+write.csv(mcpooledhabitat, 'export/mc_pooled_habitat.csv', row.names = T)
+saveRDS(mcpooledhabitat, 'export/mc_pooled_habitat.RDS')
+```
+
+## Nidos
+
+### Dahiana
 
 ```{r}
 vernid(x='dahiana', exportar = T)
+#Resolución de discrepancias en códigos de muestras entre ambos formularios
 colnid <- colnid %>% mutate(
   codigomuestra = case_when(
     idodknidos == 'uuid:99349817-83d2-48e4-b10b-22618fabe91b' & grepl('dahiana', usuarionid) ~ 'p1m2',
@@ -237,21 +275,21 @@ ident <- ident %>% mutate(
   parcela = case_when(
     idodkident == 'uuid:5ebecff3-7640-4105-b4d1-d42c5b9aa308' & grepl('dahiana', usuarioident) ~ 'p148',
     TRUE ~ parcela))
-
 colnid <- colnid %>% mutate(
   codigomuestra = ifelse(grepl('dahiana', usuarionid), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
 ident <- ident %>% mutate(
   codigomuestra = ifelse(grepl('dahiana', usuarioident), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
-#Varias discrepancias en códigos de muestras entre ambos formularios
 #Visualizar resultado
-View(colnid %>% filter(grepl('dahiana', usuarionid)) %>%
-  left_join(ident %>% filter(grepl('dahiana', usuarioident))))
+dahiana <- colnid %>% filter(grepl('dahiana', usuarionid)) %>%
+  left_join(ident %>% filter(grepl('dahiana', usuarioident)))
+verexp(dahiana)
 ```
 
-## Enrique
+### Enrique
 
 ```{r}
-vernid(x='enrique', exportar = T)
+# vernid(x='enrique', exportar = T)
+vernid(x='enrique')
 colnid <- colnid %>% mutate(
   codigomuestra = ifelse(grepl('enrique', usuarionid), gsub(' ', '', toupper(codigomuestra)), codigomuestra))
 ident <- ident %>% mutate(
@@ -267,12 +305,38 @@ ident <- ident %>% mutate(
     codigomuestra == '166M4' & grepl('enrique', usuarioident) ~ 'PN166M4',
     TRUE ~ codigomuestra
   ))
+#Tras mensaje de respuesta de Enrique, 4/nov/2019
+ident <- ident %>% mutate(
+  codigomuestra = case_when(
+    idodkident == 'uuid:9ea67257-64e2-47af-9718-b41b5f4bcfdb' & grepl('enrique', usuarioident) ~ 'PN21M2',
+    idodkident == 'uuid:a996f1a9-fe0b-423b-ba86-8f32dfac98d3' & grepl('enrique', usuarioident) ~ 'PN22M1',
+    TRUE ~ codigomuestra),
+  parcela = case_when(
+    idodkident == 'uuid:9ea67257-64e2-47af-9718-b41b5f4bcfdb' & grepl('enrique', usuarioident) ~ 'p21',
+    TRUE ~ parcela))
+#Nuevas discrepancias detectadas
+ident <- ident %>% mutate(
+  parcela = case_when(
+    idodkident == 'uuid:073ea94d-4812-485c-b346-842e80f1f106' & grepl('enrique', usuarioident) ~ 'p151',
+    TRUE ~ parcela))
+colnid <- colnid %>% mutate(
+  parcela = case_when(
+    idodknidos == 'uuid:2933f009-4001-4ae0-98db-8aa27da63a00' & grepl('enrique', usuarionid) ~ 'p86',
+    TRUE ~ parcela))
+#Añadir filas a colnid donde no aparecieron nidos 68, 81, 109, 159, 170
+parcelasanadirenrique <- c(68, 81, 109, 159, 170)
+colnid <- colnid %>% add_row(
+  parcela = paste0('p', parcelasanadirenrique),
+  usuarionid = 'uid:enrique193|2019-08-27T17:32:44.132698Z',
+  observaciones = 'No se reportaron nidos'
+)
 #Visualizar resultado
-View(colnid %>% filter(grepl('enrique', usuarionid)) %>%
-  left_join(ident %>% filter(grepl('enrique', usuarioident)), by = 'codigomuestra'))
+enrique <- colnid %>% filter(grepl('enrique', usuarionid)) %>%
+  left_join(ident %>% filter(grepl('enrique', usuarioident)))
+verexp(enrique)
 ```
 
-## Kesia
+### Kesia
 
 ```{r}
 vernid(x='maritza', exportar = F)
@@ -280,17 +344,95 @@ vernid(x='maritza', exportar = F)
 colnid <- colnid %>% mutate(
   parcela = case_when(
     idodknidos == 'uuid:da95c62d-7bf9-4dbf-863f-3f301b308755' & grepl('maritza', usuarionid) ~ 'p106',
-    TRUE ~ parcela
-  ))
-View(colnid %>% filter(grepl('maritza', usuarionid)) %>%
-  left_join(ident %>% filter(grepl('maritza', usuarioident))))
+    TRUE ~ parcela),
+  observaciones = case_when(
+    idodknidos == 'uuid:da95c62d-7bf9-4dbf-863f-3f301b308755' & grepl('maritza', usuarionid) ~ 'No se reportaron nidos',
+    TRUE ~ observaciones))
+ident <- ident %>% mutate(
+  identificaciones = case_when(
+    idodkident == 'uuid:454ae767-1a39-42c3-85fb-1d1a06adbc15' & grepl('maritza', usuarioident) ~ gsub('pseudoponera', 'pseudomyrmex', identificaciones),
+  TRUE ~ identificaciones))
+kesia <- colnid %>% filter(grepl('maritza', usuarionid)) %>%
+  dplyr::select(-codigomuestra) %>%
+  left_join(ident %>% filter(grepl('maritza', usuarioident))) %>% 
+  dplyr::select(codigomuestra, parcela:siglascolectores, usuarioident:identificaciones)
+verexp(kesia)
 ```
 
+### Todas muestras de nidos
 
+```{r}
+todos_los_nidos <- bind_rows(dahiana, enrique, kesia)
+saveRDS(todos_los_nidos, 'export/tabla_todos_los_nidos.RDS')
+verexp(todos_los_nidos)
+mcpoolednidos <- todos_los_nidos %>%
+  separate_rows(identificaciones, sep = ',') %>%
+  left_join(nomlat) %>% dplyr::select(-identificaciones) %>% 
+  mutate(genero = word(`nombre latino`, 1), epiteto = word(`nombre latino`, 2)) %>% 
+  mutate(
+    `nombre latino` = ifelse(genero=='reina(s)', genero,
+                             ifelse(is.na(genero), NA, paste(genero, 'sp.')))) %>% 
+  dplyr::select(parcela, `nombre latino`) %>%
+  filter(!grepl('reina', `nombre latino`))  %>%
+  distinct() %>% mutate(n=1) %>%  spread(`nombre latino`, n, fill = 0) %>%
+  select(-`<NA>`) %>% 
+  column_to_rownames('parcela')
+write.csv(mcpoolednidos, 'export/mc_pooled_nidos.csv', row.names = T)
+saveRDS(mcpoolednidos, 'export/mc_pooled_nidos.RDS')
+```
 
-## Crear copia de seguridad:
+## Guardando los resultados
 
-```{bash, eval=F}
+```{r}
+saveRDS(colhab, 'export/colhab.RDS')
+saveRDS(colnid, 'export/colnid.RDS')
+saveRDS(ident, 'export/ident.RDS')
+write_csv(colhab, 'export/colecta_habitat.csv')
+write_csv(colnid, 'export/colecta_nidos.csv')
+write_csv(ident, 'export/identificaciones.csv')
+```
+
+## Análisis
+
+### Lectura de datos
+
+```{r, eval = T}
+colhab <- readRDS('export/colhab.RDS')
+colnid <- readRDS('export/colnid.RDS')
+ident <- readRDS('export/ident.RDS')
+todos_los_habitat <- readRDS('export/tabla_todos_los_habitat.RDS')
+todos_los_nidos <- readRDS('export/tabla_todos_los_nidos.RDS')
+mcpooledhabitat <- readRDS('export/mc_pooled_habitat.RDS')
+mcpoolednidos <- readRDS('export/mc_pooled_nidos.RDS')
+```
+
+### Análisis básicos
+
+```{r, eval = T}
+#Número de nidos por parcela:
+colnid %>% filter(!observaciones=='No se reportaron nidos') %>% group_by(parcela) %>% count %>% arrange(desc(n)) %>% print(n=100)
+
+#Número de se muestrearon las parcela con cebos
+colhab %>% group_by(parcela) %>% count %>% arrange(desc(n)) %>% print(n=100)
+
+#Nidos
+mcpoolednidos %>% rowSums %>% length
+mcpoolednidos %>% rowSums %>% sort
+mcpoolednidos %>% rowSums %>% table
+mcpoolednidos %>% colSums %>% sort
+
+#Hábitat
+mcpooledhabitat %>% rowSums %>% length
+mcpooledhabitat %>% rowSums %>% sort
+mcpooledhabitat %>% rowSums %>% table
+mcpooledhabitat %>% colSums %>% sort
+```
+
+## Herramientas de base de datos
+
+### Crear copia de seguridad:
+
+```{bash, eval = F}
 #En ODK aggregate server
 cd /tmp
 sudo -i -u postgres
@@ -298,27 +440,27 @@ pg_dump aggregate > `date "+%Y%m%d"`
 exit
 zip `date "+%Y%m%d"`.zip `date "+%Y%m%d"`
 #En PC local
-scp jr@geografiafisica.org:/tmp/`date "+%Y%m%d"`.zip .
+scp <USUARIO>@<SERVIDOR>:/tmp/`date "+%Y%m%d"`.zip .
 
 ```
 
-# Crear copia de BD en PC local
+### Crear copia de BD en PC local
 
-```{bash, eval=F}
+```{bash, eval = F}
 #Borrar BD anterior:
 sudo -i -u postgres
-dropdb aggregatedo
+dropdb <BASE DE DATOS RECEPTORA>
 #Crear nueva
-createdb aggregatedo
+createdb <BASE DE DATOS RECEPTORA>
 #Copiar nueva
 unzip `date "+%Y%m%d"`
-psql -U jr -d aggregatedo -f `date "+%Y%m%d"`
+psql -U <USUARIO LOCAL> -d <BASE DE DATOS RECEPTORA> -f `date "+%Y%m%d"`
 #Permisos
 sudo -i -u postgres
 # Postgres:
-## ALTER ROLE jr SET search_path TO aggregate, public;
-## Solo una vez: ALTER ROLE jr WITH SUPERUSER 
+## ALTER ROLE <USUARIO LOCAL> SET search_path TO aggregate, public;
+## Solo una vez: ALTER ROLE <USUARIO LOCAL> WITH SUPERUSER 
 ## \q
 exit
-psql -U jr -d aggregatedo
+psql -U <USUARIO LOCAL> -d <BASE DE DATOS RECEPTORA>
 ```
