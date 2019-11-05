@@ -58,4 +58,17 @@ bidelkis %>%
 todos %>%
   dplyr::select(distanciaabasura, identificaciones) %>% 
   View
+#Parcelas según tipo
+partipo <- read_csv('export/parcelas_tipo.csv')
+partipo %>% View
 
+#Emma
+emma <- read_csv('export/tabla_emma.csv')
+emma %>% View
+partipo %>% View
+emma %>% inner_join(partipo) %>% 
+  dplyr::select(parcela, codigomuestra,
+                identificaciones, tipo) %>% 
+  separate_rows(identificaciones, sep = ',') %>%
+  mutate(n=1) %>%  spread(identificaciones, n, fill = 0) %>%
+  View
