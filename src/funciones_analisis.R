@@ -175,7 +175,7 @@ pcoagg <- function(
   v_sign <- paste(names(which(mc_pcoa_env$vectors$pvals <= p_max)), collapse = '|')
   mc_pcoa_env_c_v <- mc_pcoa_env_c_v[grepl(v_sign, rownames(mc_pcoa_env$vectors$centroids)),]
   p <- ggplot() +
-    geom_point(data = mc_pcoa_env_c_f, aes(x = Dim1, y = Dim2), shape = 22, size = 4) +
+    geom_point(data = mc_pcoa_env_c_f, aes(x = Dim1, y = Dim2), color = 'blue', shape = 22, size = 2) +
     geom_text_repel(data = mc_pcoa_env_c_f, aes(x = Dim1, y = Dim2, label = rownames(mc_pcoa_env_c_f)), color = 'blue', alpha = 0.5, force = 10, size = textoetiq) +
     geom_point(data = mc_wa, aes(x = Dim1, y = Dim2), colour = 'red') +
     geom_text_repel(data = mc_wa, aes(x = Dim1, y = Dim2, label = rownames(mc_wa)), color = 'red', alpha = 0.5, force = 2, nudge_x = dxsp, nudge_y = dysp, size = textoetiq, fontface = 'bold') +

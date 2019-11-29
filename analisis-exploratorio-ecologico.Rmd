@@ -201,7 +201,7 @@ grep(
 
 ### Hábitat
 
-#### `mangoland`
+#### Miguel, usuario `mangoland`
 
 Si tus datos son de hábitat (para nidos, lee más abajo), utiliza la función `matriz_comunidad_hab` para generar una matriz de comunidad, y la función `matriz_ambiental_hab` para generar una de comunidad, que contendrá las variables mostras arriba. Sólo tienes que colocar tu nombre de usuario (usa la referencia anterior sobre los nombres de usuario disponibles); por ejemplo, para `mangoland`, las matrices se generarían de la siguiente manera:
 
@@ -264,18 +264,16 @@ Dendrograma:
 dendro(mc = mcmg_ord, k = 4)
 ```
 
-PCoA. Leer la [leyenda de símbolos](#leyendasimbolos) a continuación del gráfico, también denominado "*biplot*":
+PCoA.
 
 ```{r pcoa_mg, out.width=1500}
 pcoa_mg <- pcoagg(mc = mcmg_ord, ma = mamg_ord, textoetiq = 2)
-pcoa_mg$grafico
+pcoa_mg['grafico']
 ```
 
-<a name="leyendasimbolos"></a>Leyenda de símbolos:
+<a name="leyenda"></a>__Leyenda y significado del *biplot*__:
 
-Los tres símbolos empleados reflejan las posiciones de tres tipos de objetos: géneros, sitios y variables, utilizando las puntuaciones (*scores*) de cada uno en el espacio bidimensional. En este escalado, la distancia entre cada objeto es inversamente proporcional a su relación. Por lo tanto, objetos próximos reflejan algún grado de relación entre sí dentro de la muestra. En el caso que nos ocupa, dado que se trata de pocas muestras, y por el hecho de que las variables son mayoritariamente cuantitativas, sobre un mismo punto es posible que solapen distintos símbolos; reconoce cuando aparezcan de forma combinada.
-
-Leyenda de objetos:
+Los tres símbolos empleados reflejan las posiciones de tres tipos de objetos: géneros, sitios y variables, utilizando las puntuaciones (*scores*) de cada uno en el espacio bidimensional o *biplot*.
 
 |||
 |:-:|:-:|
@@ -283,8 +281,9 @@ Leyenda de objetos:
 |![](simbolo-sitios.png)|sitios|
 |![](simbolo-variables.png)|<span style="color:blue">variables</span>|
 
+En este escalado, la distancia entre cada objeto es inversamente proporcional a su relación. Por lo tanto, objetos próximos reflejan algún grado de relación entre sí dentro de la muestra. En el caso que nos ocupa, dado que se trata de pocas muestras, y por el hecho de que las variables son mayoritariamente cuantitativas, sobre un mismo punto es posible que solapen distintos símbolos; reconoce cuando aparezcan de forma combinada.
 
-#### `emdilone`
+#### Emma, usuaria `emdilone`
 
 ```{r}
 mcemdilone <- matriz_comunidad_hab('emdilone')
@@ -337,6 +336,71 @@ PCoA:
 
 ```{r pcoa_emdilone, out.width=1500}
 pcoa_em <- pcoagg(mc = mcem_ord, ma = maem_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.2)
-pcoa_em$grafico
+pcoa_em['grafico']
 ```
 
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+
+
+
+
+
+
+
+#### Emma, usuaria `emdilone`
+
+```{r}
+mcbidelkiscastillo <- matriz_comunidad_hab('bidelkiscastillo')
+mabidelkiscastillo <- matriz_ambiental_hab('bidelkiscastillo')
+mabidelkiscastillo <- mabidelkiscastillo[match(rownames(mcbidelkiscastillo), rownames(mabidelkiscastillo)),]
+```
+
+```{r}
+mcbidelkiscastillo %>% kable
+mabidelkiscastillo %>% kable
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcbidelkiscastillo %>% rowSums %>% length #Número de individuos por parcela
+mcbidelkiscastillo %>% specnumber #Número de géneros por parcela
+mcbidelkiscastillo %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcbidelkiscastillo %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcbidelkiscastillo %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcbidelkiscastillo %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_bidelkiscastillo}
+mcbidelkiscastillo_sac <- specaccum(mcbidelkiscastillo)
+plot(mcbidelkiscastillo_sac, ci.type="polygon", ci.col="yellow")  
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcbidelkiscastillo_ord <- mc_para_ord(filtusuario = 'bidelkiscastillo')
+mcbidelkiscastillo_ord %>% kable
+mabidelkiscastillo_ord <- ma_para_ord(filtusuario = 'bidelkiscastillo', mc = mcbidelkiscastillo_ord)
+mabidelkiscastillo_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_bidelkiscastillo}
+dendro(mc = mcbidelkiscastillo_ord, k = 3)
+```
+
+PCoA:
+
+```{r pcoa_bidelkiscastillo, out.width=1500}
+pcoa_bidelkiscastillo <- pcoagg(mc = mcbidelkiscastillo_ord, ma = mabidelkiscastillo_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.45)
+pcoa_bidelkiscastillo['grafico']
+```
+
+Ir a [leyenda y significado del *biplot*](#leyenda).

@@ -563,7 +563,7 @@ grep(
 
 ### Hábitat
 
-#### `mangoland`
+#### Miguel, usuario `mangoland`
 
 Si tus datos son de hábitat (para nidos, lee más abajo), utiliza la
 función `matriz_comunidad_hab` para generar una matriz de comunidad, y
@@ -721,30 +721,22 @@ dendro(mc = mcmg_ord, k = 4)
 
 ![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_mg-1.png)<!-- -->
 
-PCoA. Leer la [leyenda de símbolos](#leyendasimbolos) a continuación del
-gráfico, también denominado “*biplot*”:
+PCoA.
 
 ``` r
 pcoa_mg <- pcoagg(mc = mcmg_ord, ma = mamg_ord, textoetiq = 2)
-pcoa_mg$grafico
+pcoa_mg['grafico']
+## $grafico
 ```
 
 <img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_mg-1.png" width="1500" />
 
-<a name="leyendasimbolos"></a>Leyenda de símbolos:
+<a name="leyenda"></a>**Leyenda y significado del *biplot***:
 
 Los tres símbolos empleados reflejan las posiciones de tres tipos de
 objetos: géneros, sitios y variables, utilizando las puntuaciones
-(*scores*) de cada uno en el espacio bidimensional. En este escalado, la
-distancia entre cada objeto es inversamente proporcional a su relación.
-Por lo tanto, objetos próximos reflejan algún grado de relación entre sí
-dentro de la muestra. En el caso que nos ocupa, dado que se trata de
-pocas muestras, y por el hecho de que las variables son mayoritariamente
-cuantitativas, sobre un mismo punto es posible que solapen distintos
-símbolos; reconoce cuando aparezcan de forma combinada.
-
-Leyenda de
-objetos:
+(*scores*) de cada uno en el espacio bidimensional o
+*biplot*.
 
 |                            |                                           |
 | :------------------------: | :---------------------------------------: |
@@ -752,7 +744,15 @@ objetos:
 |  ![](simbolo-sitios.png)   |                  sitios                   |
 | ![](simbolo-variables.png) | <span style="color:blue">variables</span> |
 
-#### `emdilone`
+En este escalado, la distancia entre cada objeto es inversamente
+proporcional a su relación. Por lo tanto, objetos próximos reflejan
+algún grado de relación entre sí dentro de la muestra. En el caso que
+nos ocupa, dado que se trata de pocas muestras, y por el hecho de que
+las variables son mayoritariamente cuantitativas, sobre un mismo punto
+es posible que solapen distintos símbolos; reconoce cuando aparezcan de
+forma combinada.
+
+#### Emma, usuaria `emdilone`
 
 ``` r
 mcemdilone <- matriz_comunidad_hab('emdilone')
@@ -883,7 +883,146 @@ PCoA:
 
 ``` r
 pcoa_em <- pcoagg(mc = mcem_ord, ma = maem_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.2)
-pcoa_em$grafico
+pcoa_em['grafico']
+## $grafico
 ```
 
 <img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_emdilone-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Emma, usuaria `emdilone`
+
+``` r
+mcbidelkiscastillo <- matriz_comunidad_hab('bidelkiscastillo')
+mabidelkiscastillo <- matriz_ambiental_hab('bidelkiscastillo')
+mabidelkiscastillo <- mabidelkiscastillo[match(rownames(mcbidelkiscastillo), rownames(mabidelkiscastillo)),]
+```
+
+``` r
+mcbidelkiscastillo %>% kable
+```
+
+|      | Dorymyrmex | Paratrechina | Pheidole | Pseudomyrmex | Solenopsis |
+| ---- | ---------: | -----------: | -------: | -----------: | ---------: |
+| p105 |          0 |            1 |        0 |            0 |          0 |
+| p122 |          1 |            0 |        0 |            0 |          0 |
+| p126 |          0 |            0 |        0 |            0 |          0 |
+| p160 |          1 |            0 |        0 |            0 |          0 |
+| p169 |          1 |            0 |        0 |            0 |          0 |
+| p17  |          0 |            0 |        0 |            0 |          1 |
+| p182 |          1 |            0 |        1 |            0 |          0 |
+| p187 |          1 |            1 |        0 |            0 |          0 |
+| p39  |          1 |            0 |        0 |            0 |          0 |
+| p53  |          0 |            0 |        0 |            1 |          1 |
+| p78  |          1 |            0 |        0 |            0 |          0 |
+
+``` r
+mabidelkiscastillo %>% kable
+```
+
+|      | horainicio | horafinal | distanciaabasura  | distanciaagua     | distanciavias | actividadpersonas | actividadcebo1 | actividadcebo2 | actividadcebo3 | actividadcebo4 | fechacolecta         | plantas                  | cebosbajo | cebossobre           | cebosotrosele                    | tipo                                                    | riqueza |
+| ---- | :--------- | :-------- | :---------------- | :---------------- | :------------ | :---------------- | :------------- | :------------- | :------------- | :------------- | :------------------- | :----------------------- | :-------- | :------------------- | :------------------------------- | :------------------------------------------------------ | ------: |
+| p105 | 10.30 am   | 11.20 am  | no hay a la vista | no hay a la vista | 1a5           | 0                 | 0              | 0              | 0              | 10omas         | 2019-09-28T00:00:00Z | Palma                    | despejado | cemento\_pavimento   | no\_aplica                       | pavimentado, acerado (bordes edificios, bancos, postes) |       1 |
+| p122 | 2.30 pm    | 3.40 pm   | 10omas            | no hay a la vista | 1a5           | 0                 | 6a9            | 10omas         | 10omas         | 10omas         | 2019-09-28T00:00:00Z | Frambollan               | despejado | hierba               | hojarasca,rocas,ramas\_troncos   | suelo, herbáceas, no edificado ni cubierto              |       1 |
+| p126 | 11.00 am   | 11.41 am  | no hay a la vista | no hay a la vista | 1a5           | 6a9               | 0              | 0              | 0              | 0              | 2019-10-22T00:00:00Z | Framboyan, palma, flores | despejado | cemento\_pavimento   | no\_aplica                       | pavimentado, acerado (bordes edificios, bancos, postes) |      NA |
+| p160 | 1.55 pm    | 2.57 pm   | 1a5               | 1a5               | 1a5           | 1a5               | 1a5            | 6a9            | 1a5            | 10omas         | 2019-10-14T00:00:00Z | Palma, framboyan         | despejado | hierba               | basura\_restos\_comida,hojarasca | suelo, herbáceas, no edificado ni cubierto              |       1 |
+| p169 | 12.15 pm   | 1.00 pm   | 6a9               | no hay a la vista | 1a5           | 0                 | 0              | 1a5            | 1a5            | 0              | 2019-09-28T00:00:00Z | Palma                    | despejado | cemento\_pavimento   | basura\_restos\_comida           | pavimentado, acerado (bordes edificios, bancos, postes) |       1 |
+| p17  | 10.35 am   | 11.17 am  | 1a5               | no hay a la vista | 6a9           | 1a5               | 0              | 0              | 0              | 10omas         | 2019-10-12T00:00:00Z | Mango                    | despejado | suelo\_tierra,hierba | basura\_restos\_comida           | suelo, herbáceas, no edificado ni cubierto              |       1 |
+| p182 | 3.00 pm    | 4.15 pm   | 1a5               | no hay a la vista | 1a5           | 0                 | 1a5            | 6a9            | 6a9            | 10omas         | 2019-09-27T00:00:00Z | NULL                     | despejado | hierba               | basura\_restos\_comida,hojarasca | suelo, herbáceas, no edificado ni cubierto              |       2 |
+| p187 | 4.45 pm    | 5.35 pm   | 1a5               | 1a5               | 1a5           | 0                 | 0              | 0              | 0              | 1a5            | 2019-10-14T00:00:00Z | NULL                     | despejado | cemento\_pavimento   | basura\_restos\_comida,hojarasca | pavimentado, acerado (bordes edificios, bancos, postes) |       2 |
+| p39  | 1.30 pm    | 2.15 pm   | 1a5               | no hay a la vista | 10omas        | 0                 | 1a5            | 0              | 1a5            | 0              | 2019-10-12T00:00:00Z | NULL                     | despejado | suelo\_tierra,hierba | basura\_restos\_comida           | suelo, herbáceas, no edificado ni cubierto              |       1 |
+| p53  | 12.10 pm   | 1.05 pm   | 1a5               | no hay a la vista | 1a5           | 1a5               | 0              | 1a5            | 0              | 1a5            | 2019-10-12T00:00:00Z | Ni idea                  | despejado | cemento\_pavimento   | basura\_restos\_comida,hojarasca | pavimentado, acerado (bordes edificios, bancos, postes) |       2 |
+| p78  | 3.17 pm    | 4.10 pm   | 1a5               | no hay a la vista | 1a5           | 6a9               | 0              | 1a5            | 0              | 1a5            | 2019-10-14T00:00:00Z | Framboyan, caoba         | despejado | cemento\_pavimento   | basura\_restos\_comida           | pavimentado, acerado (bordes edificios, bancos, postes) |       1 |
+
+Análisis exploratorios
+básicos:
+
+``` r
+mcbidelkiscastillo %>% rowSums %>% length #Número de individuos por parcela
+## [1] 11
+mcbidelkiscastillo %>% specnumber #Número de géneros por parcela
+## p105 p122 p126 p160 p169  p17 p182 p187  p39  p53  p78 
+##    1    1    0    1    1    1    2    2    1    2    1
+mcbidelkiscastillo %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+## p126 p105 p122 p160 p169  p17  p39  p78 p182 p187  p53 
+##    0    1    1    1    1    1    1    1    2    2    2
+mcbidelkiscastillo %>% colSums %>% specnumber #Número de géneros total (pooled)
+## [1] 5
+mcbidelkiscastillo %>% rowSums %>% table #Número de parcelas según conteo de géneros
+## .
+## 0 1 2 
+## 1 7 3
+mcbidelkiscastillo %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+##     Pheidole Pseudomyrmex Paratrechina   Solenopsis   Dorymyrmex 
+##            1            1            2            2            7
+```
+
+Curva de acumulación de especies:
+
+``` r
+mcbidelkiscastillo_sac <- specaccum(mcbidelkiscastillo)
+plot(mcbidelkiscastillo_sac, ci.type="polygon", ci.col="yellow")  
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/curva_acumulacion_bidelkiscastillo-1.png)<!-- -->
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+``` r
+mcbidelkiscastillo_ord <- mc_para_ord(filtusuario = 'bidelkiscastillo')
+mcbidelkiscastillo_ord %>% kable
+```
+
+|      | Dorymyrmex | Paratrechina |  Pheidole | Pseudomyrmex | Solenopsis |
+| ---- | ---------: | -----------: | --------: | -----------: | ---------: |
+| p105 |  0.0000000 |    1.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p122 |  1.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p160 |  1.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p169 |  1.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p17  |  0.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  1.0000000 |
+| p182 |  0.7071068 |    0.0000000 | 0.7071068 |    0.0000000 |  0.0000000 |
+| p187 |  0.7071068 |    0.7071068 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p39  |  1.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p53  |  0.0000000 |    0.0000000 | 0.0000000 |    0.7071068 |  0.7071068 |
+| p78  |  1.0000000 |    0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+
+``` r
+mabidelkiscastillo_ord <- ma_para_ord(filtusuario = 'bidelkiscastillo', mc = mcbidelkiscastillo_ord)
+mabidelkiscastillo_ord %>% kable
+```
+
+|      | riqueza | tipo                                                    | distanciaabasura  | distanciaagua     | distanciavias | actividadpersonas | actividadcebo1 | actividadcebo2 | actividadcebo3 | actividadcebo4 | cebosbajo | cebossobre           | cebosotrosele                    |
+| ---- | ------: | :------------------------------------------------------ | :---------------- | :---------------- | :------------ | :---------------- | :------------- | :------------- | :------------- | :------------- | :-------- | :------------------- | :------------------------------- |
+| p105 |       1 | pavimentado, acerado (bordes edificios, bancos, postes) | no hay a la vista | no hay a la vista | 1a5           | 0                 | 0              | 0              | 0              | 10omas         | despejado | cemento\_pavimento   | no\_aplica                       |
+| p122 |       1 | suelo, herbáceas, no edificado ni cubierto              | 10omas            | no hay a la vista | 1a5           | 0                 | 6a9            | 10omas         | 10omas         | 10omas         | despejado | hierba               | hojarasca,rocas,ramas\_troncos   |
+| p160 |       1 | suelo, herbáceas, no edificado ni cubierto              | 1a5               | 1a5               | 1a5           | 1a5               | 1a5            | 6a9            | 1a5            | 10omas         | despejado | hierba               | basura\_restos\_comida,hojarasca |
+| p169 |       1 | pavimentado, acerado (bordes edificios, bancos, postes) | 6a9               | no hay a la vista | 1a5           | 0                 | 0              | 1a5            | 1a5            | 0              | despejado | cemento\_pavimento   | basura\_restos\_comida           |
+| p17  |       1 | suelo, herbáceas, no edificado ni cubierto              | 1a5               | no hay a la vista | 6a9           | 1a5               | 0              | 0              | 0              | 10omas         | despejado | suelo\_tierra,hierba | basura\_restos\_comida           |
+| p182 |       2 | suelo, herbáceas, no edificado ni cubierto              | 1a5               | no hay a la vista | 1a5           | 0                 | 1a5            | 6a9            | 6a9            | 10omas         | despejado | hierba               | basura\_restos\_comida,hojarasca |
+| p187 |       2 | pavimentado, acerado (bordes edificios, bancos, postes) | 1a5               | 1a5               | 1a5           | 0                 | 0              | 0              | 0              | 1a5            | despejado | cemento\_pavimento   | basura\_restos\_comida,hojarasca |
+| p39  |       1 | suelo, herbáceas, no edificado ni cubierto              | 1a5               | no hay a la vista | 10omas        | 0                 | 1a5            | 0              | 1a5            | 0              | despejado | suelo\_tierra,hierba | basura\_restos\_comida           |
+| p53  |       2 | pavimentado, acerado (bordes edificios, bancos, postes) | 1a5               | no hay a la vista | 1a5           | 1a5               | 0              | 1a5            | 0              | 1a5            | despejado | cemento\_pavimento   | basura\_restos\_comida,hojarasca |
+| p78  |       1 | pavimentado, acerado (bordes edificios, bancos, postes) | 1a5               | no hay a la vista | 1a5           | 6a9               | 0              | 1a5            | 0              | 1a5            | despejado | cemento\_pavimento   | basura\_restos\_comida           |
+
+Dendrograma:
+
+``` r
+dendro(mc = mcbidelkiscastillo_ord, k = 3)
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_bidelkiscastillo-1.png)<!-- -->
+
+PCoA:
+
+``` r
+pcoa_bidelkiscastillo <- pcoagg(mc = mcbidelkiscastillo_ord, ma = mabidelkiscastillo_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.45)
+pcoa_bidelkiscastillo['grafico']
+## $grafico
+```
+
+<img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_bidelkiscastillo-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
