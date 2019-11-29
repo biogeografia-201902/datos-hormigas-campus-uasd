@@ -14,6 +14,10 @@ knitr::opts_chunk$set(
 
 <!-- Este .md fue generado a partir del .Rmd homónimo. Edítese el .Rmd -->
 
+# Saltar a:
+
+* [Análisis exploratorio y de ecología de comunidades](analisis-exploratorio-ecologico.md)
+
 # Extraer, transformar y cargar (ETL) base de datos de ODK sobre colectas de campo e identificación de hormigas en el campus de la UASD para la asignatura "Biogeografía", semestre 2019-02, licenciatura en Geografía, UASD
 
 ## Acceso a servidor
@@ -122,6 +126,7 @@ scp <USUARIO>@<SERVIDOR>:/tmp/*.csv .
 
 ```{r, eval = T}
 library(tidyverse)
+library(lubridate)
 ```
 
 ## Lectura en R, importar
@@ -159,7 +164,8 @@ ident <- ident %>%
   mutate(codigomuestra = ifelse(codigomuestra=='20190927B2'&grepl('bidelk', usuarioident), '20190928B2', codigomuestra))
 #Visualizar resultado
 bidelkis <- colhab %>% filter(grepl('bidelk', usuariohab)) %>%
-  left_join(ident %>% filter(grepl('bidelk', usuarioident)))
+  left_join(ident %>% filter(grepl('bidelk', usuarioident))) %>% 
+  mutate(fechaidentificacion=as_date(fechaidentificacion))
 verexp(bidelkis)
 ```
 
@@ -228,6 +234,15 @@ verexp(miguel)
 
 ```{r}
 todos_los_habitat <- bind_rows(bidelkis, emma, jorge, miguel)
+partipo <- read_csv('export/parcelas_tipo.csv')
+todos_los_habitat <- todos_los_habitat %>% inner_join(partipo, by = 'parcela')
+todos_los_habitat <- todos_los_habitat %>%
+  mutate(riqueza = ifelse(
+    grepl('reina',identificaciones), str_count(identificaciones, ','),
+    str_count(identificaciones, ',') + 1))
+todos_los_habitat <- todos_los_habitat %>% 
+  mutate_at(vars(contains('distancia')),
+            function(x) ifelse(x=='0', 'no hay a la vista', x))
 saveRDS(todos_los_habitat, 'export/tabla_todos_los_habitat.RDS')
 verexp(todos_los_habitat)
 mcpooledhabitat <- todos_los_habitat %>%
@@ -236,7 +251,7 @@ mcpooledhabitat <- todos_los_habitat %>%
   mutate(genero = word(`nombre latino`, 1), epiteto = word(`nombre latino`, 2)) %>% 
   mutate(
     `nombre latino` = ifelse(genero=='reina(s)', genero,
-                             ifelse(is.na(genero), NA, paste(genero, 'sp.')))) %>% 
+                             ifelse(is.na(genero), NA, paste(genero)))) %>% 
   dplyr::select(parcela, `nombre latino`) %>%
   filter(!grepl('reina', `nombre latino`)) %>% 
   distinct() %>% mutate(n=1) %>%  spread(`nombre latino`, n, fill = 0) %>%
@@ -359,10 +374,19 @@ kesia <- colnid %>% filter(grepl('maritza', usuarionid)) %>%
 verexp(kesia)
 ```
 
-### Todas muestras de nidos
+### Todas las muestras de nidos
 
 ```{r}
 todos_los_nidos <- bind_rows(dahiana, enrique, kesia)
+partipo <- read_csv('export/parcelas_tipo.csv')
+todos_los_nidos <- todos_los_nidos %>% inner_join(partipo, by = 'parcela')
+todos_los_nidos <- todos_los_nidos %>%
+  mutate(riqueza = ifelse(
+    grepl('reina',identificaciones), str_count(identificaciones, ','),
+    str_count(identificaciones, ',') + 1))
+todos_los_nidos <- todos_los_nidos %>% 
+  mutate_at(vars(contains('distancia')),
+            function(x) ifelse(x=='0', 'no hay a la vista', x))
 saveRDS(todos_los_nidos, 'export/tabla_todos_los_nidos.RDS')
 verexp(todos_los_nidos)
 mcpoolednidos <- todos_los_nidos %>%
@@ -371,7 +395,7 @@ mcpoolednidos <- todos_los_nidos %>%
   mutate(genero = word(`nombre latino`, 1), epiteto = word(`nombre latino`, 2)) %>% 
   mutate(
     `nombre latino` = ifelse(genero=='reina(s)', genero,
-                             ifelse(is.na(genero), NA, paste(genero, 'sp.')))) %>% 
+                             ifelse(is.na(genero), NA, paste(genero)))) %>% 
   dplyr::select(parcela, `nombre latino`) %>%
   filter(!grepl('reina', `nombre latino`))  %>%
   distinct() %>% mutate(n=1) %>%  spread(`nombre latino`, n, fill = 0) %>%
@@ -381,7 +405,7 @@ write.csv(mcpoolednidos, 'export/mc_pooled_nidos.csv', row.names = T)
 saveRDS(mcpoolednidos, 'export/mc_pooled_nidos.RDS')
 ```
 
-## Guardando los resultados
+## Guardando los resultados del proceso de ETL en RDS y CSV
 
 ```{r}
 saveRDS(colhab, 'export/colhab.RDS')

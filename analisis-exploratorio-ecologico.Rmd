@@ -1,0 +1,342 @@
+---
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  eval = T,
+  warning=F,
+  message=F
+)
+```
+
+<!-- Este .md fue generado a partir del .Rmd homónimo. Edítese el .Rmd -->
+
+# Análisis exploratorio y de ecología de comunidades
+
+## Carga de funciones y paquetes
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(sf)
+library(vegan)
+library(ade4)
+library(FactoMineR)
+source('src/funciones_analisis.R')
+```
+
+## Carga de datos
+
+```{r, warning=F, message=F}
+todos_los_habitat <- read.csv('export/tabla_todos_los_habitat.csv')
+todos_los_nidos <- read.csv('export/tabla_todos_los_nidos.csv')
+mcpooledhabitat <- read.csv('export/mc_pooled_habitat.csv', row.names = 1)
+mcpoolednidos <- read.csv('export/mc_pooled_nidos.csv', row.names = 1)
+nomlat <- read_csv('equivalencia_etiqueta_nombre_latino.csv')
+```
+
+## Análisis exploratorio básico
+
+### Número de parcelas visitadas por persona
+
+```{r}
+n_parcelas(todos_los_habitat, pooled = F) %>% kable()
+n_parcelas(todos_los_nidos, pooled = F) %>% kable()
+```
+
+
+### Número de parcelas visitadas, pooled
+
+```{r}
+n_parcelas(todos_los_habitat, pooled = T) %>% kable()
+n_parcelas(todos_los_nidos, pooled = T) %>% kable()
+```
+
+
+### Número de muestras por persona
+
+```{r}
+n_muestras(todos_los_habitat, pooled = F) %>% kable()
+n_muestras(todos_los_nidos, pooled = F) %>% kable()
+```
+
+### Número de muestras, pooled
+
+```{r}
+n_muestras(todos_los_habitat, pooled = T) %>% kable()
+n_muestras(todos_los_nidos, pooled = T) %>% kable()
+```
+
+### Número de muestras por parcela visitada por persona
+
+* En el caso de hábitat/cebos el resultado es redundante, porque cada parcela sólo tenía una muestra.
+
+```{r}
+n_parcelas_muestras(todos_los_habitat, pooled = F) %>% kable()
+n_parcelas_muestras(todos_los_nidos, pooled = F) %>% kable()
+```
+
+### Número de muestras por parcela visitada, pooled
+
+```{r}
+n_parcelas_muestras(todos_los_habitat, pooled = T) %>% kable()
+n_parcelas_muestras(todos_los_nidos, pooled = T) %>% kable()
+```
+
+### Parcelas visitadas por persona
+
+```{r}
+parcelas_visitadas(todos_los_habitat, pooled = F) %>% kable()
+parcelas_visitadas(todos_los_nidos, pooled = F) %>% kable()
+```
+
+### Parcelas visitadas, pooled
+
+```{r}
+parcelas_visitadas(todos_los_habitat, pooled = T) %>% kable()
+parcelas_visitadas(todos_los_nidos, pooled = T) %>% kable()
+```
+
+## Mapas
+
+Elige un usuario y una variable, cuantitativa o cualitativa, para crear mapas y visualizar patrones.
+
+* Un primer ejemplo con una variable cuantitativa para hábitat, en este caso, la riqueza (con riqueza pequeña, se generan muchos rangos en leyenda, y sólo son aprovechables los extremos):
+
+```{r mapa-riqueza-bidelkis}
+mapa('riqueza', filtusuario = 'bidelkiscastillo')
+```
+
+* En el caso de nidos, dado que en algunos casos hay 2 o más por parcela, debes elegir con qué función resumir variables cuantitativas.
+
+    * Promedio de la riqueza por parcelas
+
+    ```{r mapa-riqueza-dahiana-mean}
+    mapa('riqueza', filtusuario = 'dahianagb07', fun = mean)
+    ```
+
+    * Máxima riqueza por parcelas
+
+    ```{r mapa-riqueza-dahiana-max}
+    mapa('riqueza', filtusuario = 'dahianagb07', fun = max)
+    ```
+
+* Puedes representar variables cualitativas también:
+
+    * Un ejemplo con la variable "distancia a basura":
+
+      ```{r mapa-distancia-basura-mangoland}
+      mapa('distanciaabasura', filtusuario = 'mangoland')
+      ```
+
+    * El código de muestra es una variable cualitativa, y la puedes usar en la representación:
+
+      ```{r mapa-codigo-muestra-emdilone}
+      mapa('codigomuestra', filtusuario = 'emdilone')
+      ```
+
+    * En el caso de los nidos, las variables cualitativas son concatenadas dentro de un único vector, separando cada valor (si hubiese más de uno) por comas
+    
+      ```{r mapa-codigo-muestra-enrique}
+      mapa('codigomuestra', filtusuario = 'enrique193')
+      ```
+
+* Estas son las variables dispnibles:
+
+    * Para habitat:
+
+      ```{r}
+      colnames(todos_los_habitat) %>% knitr::kable(col.names = 'Variables para hábitat')
+      ```
+
+    * Para nidos:
+
+      ```{r}
+      colnames(todos_los_nidos) %>% knitr::kable(col.names = 'Variables para nidos')
+      ```
+
+* Estos son los nombres de usuario disponibles:
+
+    * Para hábitat:
+
+      ```{r}
+      todos_los_habitat %>% colus() %>% usuarioanombre() %>%
+        dplyr::select(usuario=Nombre) %>% distinct() %>% kable()
+      ```
+
+    * Para nidos:
+
+      ```{r}
+      todos_los_nidos %>% colus() %>% usuarioanombre() %>%
+        dplyr::select(usuario=Nombre) %>% distinct() %>% kable()
+      ```
+
+## Análisis de ecología de comunidades
+
+### Matrices de comunidad y ambiental
+
+Las variables ambientales son diferentes de cebos (que coloquialmente recibe el nombre de "hábitat") son ligeramente diferentes a las de nidos.
+
+En el caso de las muestras tomadas por cebo, las variables ambientales son las siguientes:
+
+```{r}
+grep(
+  'distancia|hora|colecta|actividad|^cebos|tipo$|plantas',
+  colnames(todos_los_habitat),
+  value = T)
+```
+
+Y en el caso de las muestras de nidos, las variables ambientales son éstas:
+
+```{r}
+grep(
+  'distancia|hora|colecta|actividad|^cebos|tipo$|plantas',
+  colnames(todos_los_nidos),
+  value = T)
+```
+
+### Hábitat
+
+#### `mangoland`
+
+Si tus datos son de hábitat (para nidos, lee más abajo), utiliza la función `matriz_comunidad_hab` para generar una matriz de comunidad, y la función `matriz_ambiental_hab` para generar una de comunidad, que contendrá las variables mostras arriba. Sólo tienes que colocar tu nombre de usuario (usa la referencia anterior sobre los nombres de usuario disponibles); por ejemplo, para `mangoland`, las matrices se generarían de la siguiente manera:
+
+```{r}
+mcmg <- matriz_comunidad_hab('mangoland')
+mamg <- matriz_ambiental_hab('mangoland')
+mamg <- mamg[match(rownames(mcmg), rownames(mamg)),] #Reordenando filas para que ambas matrices coincidan
+```
+
+La imprimimos:
+
+```{r}
+mcmg %>% kable
+mamg %>% kable
+```
+
+Con ambas matrices se pueden realizar múltiples análisis exploratorios. Lo básico:
+
+```{r}
+mcmg %>% rowSums %>% length #Número de individuos por parcela
+mcmg %>% specnumber #Número de géneros por parcela
+mcmg %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcmg %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcmg %>% rowSums %>% table #Número de parcelas según conteo de géneros (e.g. 3 parcelas con 0, etc.)
+mcmg %>% colSums %>% sort #Número de parcelas en las que aparece cada género. Dorymyrmex, generalista
+```
+
+Una curva de acumulación de especies revela algo sobre la riqueza esperada.
+
+```{r curva_acum_mangoland}
+mcmg_sac <- specaccum(mcmg)
+plot(mcmg_sac, ci.type="polygon", ci.col="yellow")
+```
+
+Aunque el intervalo de confianza es horrible, y denota que la muestra es pequeña, parecería razonable asumir que más del 60% de la riqueza esperada por géneros fue alcanzada en esta muestra de `mangoland`.
+
+Si se realiza el análisis para el conjunto de los datos combinados (*pooled*), se obtendrían mejores reusltados.
+
+```{r curva_acumulacion_pooled}
+mcpooledhabitat_sac <- specaccum(mcpooledhabitat)
+plot(mcpooledhabitat_sac, ci.type="polygon", ci.col="yellow")
+```
+
+A juzgar por la forma de la curva de acumulación de especies de todas las muestras combinadas (11 géneros encontrados), donde el extremo derecho se vuelve asintótico, no parece posible encontrar mucho más de 11 o 12 géneros por medio de cebos, incluso aumentando significativamente el esfuerzo de muestreo.
+
+##### Ordenación: dendrograma y Análisis de Coordenadas Principales (PCoA)
+
+Obtener matrices de comunidad y ambiental para ordenación. La matriz de comunidad se transforma por medio del método "Hellinger". La matriz ambiental es similar a la original, pero se seleccionan sólo aquellas columnas con potencial asociación con los datos de comunidad.
+
+```{r}
+mcmg_ord <- mc_para_ord(filtusuario = 'mangoland')
+mcmg_ord %>% kable
+mamg_ord <- ma_para_ord(filtusuario = 'mangoland', mc = mcmg_ord)
+mamg_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_mg}
+dendro(mc = mcmg_ord, k = 4)
+```
+
+PCoA. Leer la [leyenda de símbolos](#leyendasimbolos) a continuación del gráfico, también denominado "*biplot*":
+
+```{r pcoa_mg, out.width=1500}
+pcoa_mg <- pcoagg(mc = mcmg_ord, ma = mamg_ord, textoetiq = 2)
+pcoa_mg$grafico
+```
+
+<a name="leyendasimbolos"></a>Leyenda de símbolos:
+
+Los tres símbolos empleados reflejan las posiciones de tres tipos de objetos: géneros, sitios y variables, utilizando las puntuaciones (*scores*) de cada uno en el espacio bidimensional. En este escalado, la distancia entre cada objeto es inversamente proporcional a su relación. Por lo tanto, objetos próximos reflejan algún grado de relación entre sí dentro de la muestra. En el caso que nos ocupa, dado que se trata de pocas muestras, y por el hecho de que las variables son mayoritariamente cuantitativas, sobre un mismo punto es posible que solapen distintos símbolos; reconoce cuando aparezcan de forma combinada.
+
+Leyenda de objetos:
+
+|||
+|:-:|:-:|
+|![](simbolo-generos.png)|<span style="color:red">géneros</span>|
+|![](simbolo-sitios.png)|sitios|
+|![](simbolo-variables.png)|<span style="color:blue">variables</span>|
+
+
+#### `emdilone`
+
+```{r}
+mcemdilone <- matriz_comunidad_hab('emdilone')
+maemdilone <- matriz_ambiental_hab('emdilone')
+maemdilone <- maemdilone[match(rownames(mcemdilone), rownames(maemdilone)),]
+```
+
+```{r}
+mcemdilone %>% kable
+maemdilone %>% kable
+
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcemdilone %>% rowSums %>% length #Número de individuos por parcela
+mcemdilone %>% specnumber #Número de géneros por parcela
+mcemdilone %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcemdilone %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcemdilone %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcemdilone %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_emdilone}
+mcemdilone_sac <- specaccum(mcemdilone)
+plot(mcemdilone_sac, ci.type="polygon", ci.col="yellow")  
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcem_ord <- mc_para_ord(filtusuario = 'emdilone')
+mcem_ord %>% kable
+maem_ord <- ma_para_ord(filtusuario = 'emdilone', mc = mcem_ord)
+maem_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_emdilone}
+dendro(mc = mcem_ord, k = 4)
+```
+
+PCoA:
+
+```{r pcoa_emdilone, out.width=1500}
+pcoa_em <- pcoagg(mc = mcem_ord, ma = maem_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.2)
+pcoa_em$grafico
+```
+

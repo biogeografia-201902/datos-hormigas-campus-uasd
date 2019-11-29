@@ -1,0 +1,52 @@
+---
+title: "Todos los mapas disponibles"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Todos los mapas disponibles
+
+
+## Carga de funciones y paquetes
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(sf)
+library(vegan)
+library(ade4)
+library(FactoMineR)
+source('src/funciones_analisis.R')
+```
+
+## Carga de datos
+
+```{r, warning=F, message=F}
+todos_los_habitat <- read.csv('export/tabla_todos_los_habitat.csv')
+todos_los_nidos <- read.csv('export/tabla_todos_los_nidos.csv')
+```
+
+## Combinaciones usuarios de hábitat con variables:
+
+```{r}
+variables_hab <- colnames(todos_los_habitat)
+usuarios_hab <- (todos_los_habitat %>%
+                            colus() %>% usuarioanombre() %>%
+                            dplyr::select(usuario=Nombre) %>% distinct())$usuario
+comb <- expand.grid(variables_hab, usuarios_hab)
+
+# for (i in 15:20) {
+#   tryCatch(mapa(vari = as.character(comb[i,1]), filtusuario = as.character(comb[i,2])))
+# }
+  
+
+# sapply(1:2, function(x) tryCatch(mapa(vari = as.character(comb[x,1]), filtusuario = as.character(comb[x,2]))))
+# 1:nrow(comb)
+```
+
+
