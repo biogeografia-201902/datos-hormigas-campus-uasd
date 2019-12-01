@@ -107,8 +107,8 @@ Elige un usuario y una variable, cuantitativa o cualitativa, para crear mapas y 
 
 * Un primer ejemplo con una variable cuantitativa para hábitat, en este caso, la riqueza (con riqueza pequeña, se generan muchos rangos en leyenda, y sólo son aprovechables los extremos):
 
-```{r mapa-riqueza-bidelkis}
-mapa('riqueza', filtusuario = 'bidelkiscastillo')
+```{r mapa-riqueza-bidelkis, results='asis'}
+(mapa('riqueza', filtusuario = 'bidelkiscastillo'))
 ```
 
 * En el caso de nidos, dado que en algunos casos hay 2 o más por parcela, debes elegir con qué función resumir variables cuantitativas.
@@ -116,13 +116,13 @@ mapa('riqueza', filtusuario = 'bidelkiscastillo')
     * Promedio de la riqueza por parcelas
 
     ```{r mapa-riqueza-dahiana-mean}
-    mapa('riqueza', filtusuario = 'dahianagb07', fun = mean)
+    (mapa('riqueza', filtusuario = 'dahianagb07', fun = mean))
     ```
 
     * Máxima riqueza por parcelas
 
     ```{r mapa-riqueza-dahiana-max}
-    mapa('riqueza', filtusuario = 'dahianagb07', fun = max)
+    (mapa('riqueza', filtusuario = 'dahianagb07', fun = max))
     ```
 
 * Puedes representar variables cualitativas también:
@@ -130,19 +130,19 @@ mapa('riqueza', filtusuario = 'bidelkiscastillo')
     * Un ejemplo con la variable "distancia a basura":
 
       ```{r mapa-distancia-basura-mangoland}
-      mapa('distanciaabasura', filtusuario = 'mangoland')
+      (mapa('distanciaabasura', filtusuario = 'mangoland'))
       ```
 
     * El código de muestra es una variable cualitativa, y la puedes usar en la representación:
 
       ```{r mapa-codigo-muestra-emdilone}
-      mapa('codigomuestra', filtusuario = 'emdilone')
+      (mapa('codigomuestra', filtusuario = 'emdilone'))
       ```
 
     * En el caso de los nidos, las variables cualitativas son concatenadas dentro de un único vector, separando cada valor (si hubiese más de uno) por comas
     
       ```{r mapa-codigo-muestra-enrique}
-      mapa('codigomuestra', filtusuario = 'enrique193')
+      (mapa('codigomuestra', filtusuario = 'enrique193'))
       ```
 
 * Estas son las variables dispnibles:
@@ -341,14 +341,7 @@ pcoa_em['grafico']
 
 Ir a [leyenda y significado del *biplot*](#leyenda).
 
-
-
-
-
-
-
-
-#### Emma, usuaria `emdilone`
+#### Bidelkis, usuaria `bidelkiscastillo`
 
 ```{r}
 mcbidelkiscastillo <- matriz_comunidad_hab('bidelkiscastillo')
@@ -401,6 +394,65 @@ PCoA:
 ```{r pcoa_bidelkiscastillo, out.width=1500}
 pcoa_bidelkiscastillo <- pcoagg(mc = mcbidelkiscastillo_ord, ma = mabidelkiscastillo_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.45)
 pcoa_bidelkiscastillo['grafico']
+```
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Jorge, usuario `jorge-mutonen`
+
+```{r}
+mcjorgemutonen <- matriz_comunidad_hab('jorge-mutonen')
+majorgemutonen <- matriz_ambiental_hab('jorge-mutonen')
+majorgemutonen <- majorgemutonen[match(rownames(mcjorgemutonen), rownames(majorgemutonen)),]
+```
+
+```{r}
+mcjorgemutonen %>% kable
+majorgemutonen %>% kable
+
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcjorgemutonen %>% rowSums %>% length #Número de individuos por parcela
+mcjorgemutonen %>% specnumber #Número de géneros por parcela
+mcjorgemutonen %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcjorgemutonen %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcjorgemutonen %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcjorgemutonen %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_jorgemutonen}
+mcjorgemutonen_sac <- specaccum(mcjorgemutonen)
+plot(mcjorgemutonen_sac, ci.type="polygon", ci.col="yellow")
+  
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcjorgemutonen_ord <- mc_para_ord(filtusuario = 'jorge-mutonen')
+mcjorgemutonen_ord %>% kable
+majorgemutonen_ord <- ma_para_ord(filtusuario = 'jorge-mutonen', mc = mcjorgemutonen_ord)
+majorgemutonen_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_jorgemutonen}
+dendro(mc = mcjorgemutonen_ord, k = 3)
+```
+
+PCoA:
+
+```{r pcoa_jorgemutonen, out.width=1500}
+pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.3)
+pcoa_jorgemutonen['grafico']
 ```
 
 Ir a [leyenda y significado del *biplot*](#leyenda).

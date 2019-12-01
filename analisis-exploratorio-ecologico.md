@@ -340,56 +340,74 @@ mapas y visualizar patrones.
 
   - Un primer ejemplo con una variable cuantitativa para hábitat, en
     este caso, la riqueza (con riqueza pequeña, se generan muchos rangos
-    en leyenda, y sólo son aprovechables los extremos):
+    en leyenda, y sólo son aprovechables los
+extremos):
 
 <!-- end list -->
 
 ``` r
-mapa('riqueza', filtusuario = 'bidelkiscastillo')
+(mapa('riqueza', filtusuario = 'bidelkiscastillo'))
 ```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-riqueza-bidelkis-1.png)<!-- -->
 
   - En el caso de nidos, dado que en algunos casos hay 2 o más por
     parcela, debes elegir con qué función resumir variables
     cuantitativas.
     
-      - Promedio de la riqueza por parcelas
+      - Promedio de la riqueza por
+    parcelas
     
     <!-- end list -->
     
     ``` r
-    mapa('riqueza', filtusuario = 'dahianagb07', fun = mean)
+    (mapa('riqueza', filtusuario = 'dahianagb07', fun = mean))
     ```
     
-      - Máxima riqueza por parcelas
+    ![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-riqueza-dahiana-mean-1.png)<!-- -->
+    
+      - Máxima riqueza por
+    parcelas
     
     <!-- end list -->
     
     ``` r
-    mapa('riqueza', filtusuario = 'dahianagb07', fun = max)
+    (mapa('riqueza', filtusuario = 'dahianagb07', fun = max))
     ```
+    
+    ![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-riqueza-dahiana-max-1.png)<!-- -->
 
   - Puedes representar variables cualitativas también:
     
-      - Un ejemplo con la variable “distancia a basura”:
+      - Un ejemplo con la variable “distancia a
+        basura”:
         
         ``` r
-        mapa('distanciaabasura', filtusuario = 'mangoland')
+        (mapa('distanciaabasura', filtusuario = 'mangoland'))
         ```
+        
+        ![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-distancia-basura-mangoland-1.png)<!-- -->
     
       - El código de muestra es una variable cualitativa, y la puedes
-        usar en la representación:
+        usar en la
+        representación:
         
         ``` r
-        mapa('codigomuestra', filtusuario = 'emdilone')
+        (mapa('codigomuestra', filtusuario = 'emdilone'))
         ```
+        
+        ![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-codigo-muestra-emdilone-1.png)<!-- -->
     
       - En el caso de los nidos, las variables cualitativas son
         concatenadas dentro de un único vector, separando cada valor (si
-        hubiese más de uno) por comas
+        hubiese más de uno) por
+        comas
         
         ``` r
-        mapa('codigomuestra', filtusuario = 'enrique193')
+        (mapa('codigomuestra', filtusuario = 'enrique193'))
         ```
+        
+        ![](analisis-exploratorio-ecologico_files/figure-gfm/mapa-codigo-muestra-enrique-1.png)<!-- -->
 
   - Estas son las variables dispnibles:
     
@@ -891,7 +909,7 @@ pcoa_em['grafico']
 
 Ir a [leyenda y significado del *biplot*](#leyenda).
 
-#### Emma, usuaria `emdilone`
+#### Bidelkis, usuaria `bidelkiscastillo`
 
 ``` r
 mcbidelkiscastillo <- matriz_comunidad_hab('bidelkiscastillo')
@@ -1024,5 +1042,144 @@ pcoa_bidelkiscastillo['grafico']
 ```
 
 <img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_bidelkiscastillo-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Jorge, usuario `jorge-mutonen`
+
+``` r
+mcjorgemutonen <- matriz_comunidad_hab('jorge-mutonen')
+majorgemutonen <- matriz_ambiental_hab('jorge-mutonen')
+majorgemutonen <- majorgemutonen[match(rownames(mcjorgemutonen), rownames(majorgemutonen)),]
+```
+
+``` r
+mcjorgemutonen %>% kable
+```
+
+|      | Brachymyrmex | Dorymyrmex | Odontomachus | Paratrechina | Pheidole | Solenopsis |
+| ---- | -----------: | ---------: | -----------: | -----------: | -------: | ---------: |
+| p135 |            1 |          1 |            0 |            0 |        1 |          0 |
+| p158 |            0 |          0 |            0 |            0 |        0 |          1 |
+| p182 |            0 |          1 |            0 |            0 |        1 |          1 |
+| p25  |            1 |          1 |            0 |            0 |        1 |          1 |
+| p28  |            1 |          0 |            0 |            0 |        1 |          1 |
+| p41  |            0 |          0 |            0 |            0 |        0 |          1 |
+| p44  |            0 |          1 |            0 |            1 |        1 |          1 |
+| p49  |            0 |          1 |            0 |            0 |        0 |          1 |
+| p54  |            1 |          1 |            1 |            0 |        1 |          0 |
+| p64  |            0 |          1 |            0 |            0 |        0 |          1 |
+| p88  |            1 |          1 |            0 |            0 |        1 |          1 |
+
+``` r
+majorgemutonen %>% kable
+```
+
+|      | horainicio | horafinal | distanciaabasura  | distanciaagua     | distanciavias | actividadpersonas | actividadcebo1 | actividadcebo2 | actividadcebo3 | actividadcebo4 | fechacolecta         | plantas            | cebosbajo       | cebossobre                | cebosotrosele                                   | tipo                                       | riqueza |
+| ---- | :--------- | :-------- | :---------------- | :---------------- | :------------ | :---------------- | :------------- | :------------- | :------------- | :------------- | :------------------- | :----------------- | :-------------- | :------------------------ | :---------------------------------------------- | :----------------------------------------- | ------: |
+| p135 | 1.17 pm    | 2.10 pm   | 6a9               | no hay a la vista | 1a5           | 0                 | 0              | 6a9            | 10omas         | 10omas         | 2019-10-13T00:00:00Z | NULL               | dosel           | hierba,suelo\_tierra      | hojarasca,ramas\_troncos                        | dosel                                      |       3 |
+| p158 | 5.59 pm    | 6.57 pm   | 10omas            | no hay a la vista | 1a5           | 1a5               | 1a5            | 10omas         | 10omas         | 6a9            | 2019-10-12T00:00:00Z | NULL               | despejado       | hierba                    | no\_aplica                                      | suelo, herbáceas, no edificado ni cubierto |       1 |
+| p182 | 11.11 am   | 12.08 pm  | no hay a la vista | no hay a la vista | 1a5           | 0                 | 0              | 6a9            | 10omas         | 6a9            | 2019-10-13T00:00:00Z | NULL               | despejado       | hierba                    | no\_aplica                                      | suelo, herbáceas, no edificado ni cubierto |       3 |
+| p25  | 9.20 am    | 10.34 am  | no hay a la vista | no hay a la vista | 1a5           | 0                 | 1a5            | 10omas         | 10omas         | 6a9            | 2019-09-29T00:00:00Z | NULL               | despejado       | hierba                    | no\_aplica                                      | suelo, herbáceas, no edificado ni cubierto |       4 |
+| p28  | 6.03 pm    | 7.27 pm   | no\_aplica        | no hay a la vista | 1a5           | 1a5               | 10omas         | 10omas         | 10omas         | 10omas         | 2019-09-26T00:00:00Z | NULL               | no\_aplica      | hierba                    | no\_aplica                                      | suelo, herbáceas, no edificado ni cubierto |       3 |
+| p41  | 4.46 pm    | 5.31 pm   | 10omas            | no hay a la vista | 1a5           | 6a9               | 6a9            | 6a9            | 1a5            | 10omas         | 2019-10-12T00:00:00Z | NULL               | despejado       | hierba                    | no\_aplica                                      | suelo, herbáceas, no edificado ni cubierto |       1 |
+| p44  | 11.36 am   | 12.58 pm  | 6a9               | no hay a la vista | 10omas        | 0                 | 10omas         | 10omas         | 10omas         | 10omas         | 2019-09-29T00:00:00Z | NULL               | dosel,despejado | suelo\_tierra,hierba      | hojarasca,ramas\_troncos,rocas                  | dosel                                      |       4 |
+| p49  | 2.25 pm    | 3.44 pm   | 10omas            | no hay a la vista | 1a5           | 6a9               | 10omas         | 10omas         | 10omas         | 6a9            | 2019-09-29T00:00:00Z | NULL               | dosel           | cemento\_pavimento,hierba | ramas\_troncos,hojarasca                        | dosel                                      |       2 |
+| p54  | 5.47 pm    | 6.42 pm   | 1a5               | no hay a la vista | 1a5           | 1a5               | 1a5            | 10omas         | 1a5            | 10omas         | 2019-09-29T00:00:00Z | Pata de vaca, noni | dosel           | hierba,cemento\_pavimento | hojarasca,basura\_restos\_comida,ramas\_troncos | dosel                                      |       4 |
+| p64  | 6.19 pm    | 7.47 pm   | 10omas            | no hay a la vista | 1a5           | 1a5               | 10omas         | 10omas         | 10omas         | 10omas         | 2019-09-27T00:00:00Z | NULL               | despejado       | hierba                    | basura\_restos\_comida                          | suelo, herbáceas, no edificado ni cubierto |       2 |
+| p88  | 11.06 am   | 12.06 pm  | 10omas            | no hay a la vista | 1a5           | 10omas            | 0              | 10omas         | 1a5            | 1a5            | 2019-10-12T00:00:00Z | NULL               | dosel           | hierba                    | no\_aplica                                      | dosel                                      |       4 |
+
+Análisis exploratorios básicos:
+
+``` r
+mcjorgemutonen %>% rowSums %>% length #Número de individuos por parcela
+## [1] 11
+mcjorgemutonen %>% specnumber #Número de géneros por parcela
+## p135 p158 p182  p25  p28  p41  p44  p49  p54  p64  p88 
+##    3    1    3    4    3    1    4    2    4    2    4
+mcjorgemutonen %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+## p158  p41  p49  p64 p135 p182  p28  p25  p44  p54  p88 
+##    1    1    2    2    3    3    3    4    4    4    4
+mcjorgemutonen %>% colSums %>% specnumber #Número de géneros total (pooled)
+## [1] 6
+mcjorgemutonen %>% rowSums %>% table #Número de parcelas según conteo de géneros
+## .
+## 1 2 3 4 
+## 2 2 3 4
+mcjorgemutonen %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+## Odontomachus Paratrechina Brachymyrmex     Pheidole   Dorymyrmex 
+##            1            1            5            7            8 
+##   Solenopsis 
+##            9
+```
+
+Curva de acumulación de especies:
+
+``` r
+mcjorgemutonen_sac <- specaccum(mcjorgemutonen)
+plot(mcjorgemutonen_sac, ci.type="polygon", ci.col="yellow")
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/curva_acumulacion_jorgemutonen-1.png)<!-- -->
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+``` r
+mcjorgemutonen_ord <- mc_para_ord(filtusuario = 'jorge-mutonen')
+mcjorgemutonen_ord %>% kable
+```
+
+|      | Brachymyrmex | Dorymyrmex | Odontomachus | Paratrechina |  Pheidole | Solenopsis |
+| ---- | -----------: | ---------: | -----------: | -----------: | --------: | ---------: |
+| p135 |    0.5773503 |  0.5773503 |          0.0 |          0.0 | 0.5773503 |  0.0000000 |
+| p158 |    0.0000000 |  0.0000000 |          0.0 |          0.0 | 0.0000000 |  1.0000000 |
+| p182 |    0.0000000 |  0.5773503 |          0.0 |          0.0 | 0.5773503 |  0.5773503 |
+| p25  |    0.5000000 |  0.5000000 |          0.0 |          0.0 | 0.5000000 |  0.5000000 |
+| p28  |    0.5773503 |  0.0000000 |          0.0 |          0.0 | 0.5773503 |  0.5773503 |
+| p41  |    0.0000000 |  0.0000000 |          0.0 |          0.0 | 0.0000000 |  1.0000000 |
+| p44  |    0.0000000 |  0.5000000 |          0.0 |          0.5 | 0.5000000 |  0.5000000 |
+| p49  |    0.0000000 |  0.7071068 |          0.0 |          0.0 | 0.0000000 |  0.7071068 |
+| p54  |    0.5000000 |  0.5000000 |          0.5 |          0.0 | 0.5000000 |  0.0000000 |
+| p64  |    0.0000000 |  0.7071068 |          0.0 |          0.0 | 0.0000000 |  0.7071068 |
+| p88  |    0.5000000 |  0.5000000 |          0.0 |          0.0 | 0.5000000 |  0.5000000 |
+
+``` r
+majorgemutonen_ord <- ma_para_ord(filtusuario = 'jorge-mutonen', mc = mcjorgemutonen_ord)
+majorgemutonen_ord %>% kable
+```
+
+|      | riqueza | tipo                                       | distanciaabasura  | distanciaagua     | distanciavias | actividadpersonas | actividadcebo1 | actividadcebo2 | actividadcebo3 | actividadcebo4 | cebosbajo       | cebossobre                | cebosotrosele                                   |
+| ---- | ------: | :----------------------------------------- | :---------------- | :---------------- | :------------ | :---------------- | :------------- | :------------- | :------------- | :------------- | :-------------- | :------------------------ | :---------------------------------------------- |
+| p135 |       3 | dosel                                      | 6a9               | no hay a la vista | 1a5           | 0                 | 0              | 6a9            | 10omas         | 10omas         | dosel           | hierba,suelo\_tierra      | hojarasca,ramas\_troncos                        |
+| p158 |       1 | suelo, herbáceas, no edificado ni cubierto | 10omas            | no hay a la vista | 1a5           | 1a5               | 1a5            | 10omas         | 10omas         | 6a9            | despejado       | hierba                    | no\_aplica                                      |
+| p182 |       3 | suelo, herbáceas, no edificado ni cubierto | no hay a la vista | no hay a la vista | 1a5           | 0                 | 0              | 6a9            | 10omas         | 6a9            | despejado       | hierba                    | no\_aplica                                      |
+| p25  |       4 | suelo, herbáceas, no edificado ni cubierto | no hay a la vista | no hay a la vista | 1a5           | 0                 | 1a5            | 10omas         | 10omas         | 6a9            | despejado       | hierba                    | no\_aplica                                      |
+| p28  |       3 | suelo, herbáceas, no edificado ni cubierto | no\_aplica        | no hay a la vista | 1a5           | 1a5               | 10omas         | 10omas         | 10omas         | 10omas         | no\_aplica      | hierba                    | no\_aplica                                      |
+| p41  |       1 | suelo, herbáceas, no edificado ni cubierto | 10omas            | no hay a la vista | 1a5           | 6a9               | 6a9            | 6a9            | 1a5            | 10omas         | despejado       | hierba                    | no\_aplica                                      |
+| p44  |       4 | dosel                                      | 6a9               | no hay a la vista | 10omas        | 0                 | 10omas         | 10omas         | 10omas         | 10omas         | dosel,despejado | suelo\_tierra,hierba      | hojarasca,ramas\_troncos,rocas                  |
+| p49  |       2 | dosel                                      | 10omas            | no hay a la vista | 1a5           | 6a9               | 10omas         | 10omas         | 10omas         | 6a9            | dosel           | cemento\_pavimento,hierba | ramas\_troncos,hojarasca                        |
+| p54  |       4 | dosel                                      | 1a5               | no hay a la vista | 1a5           | 1a5               | 1a5            | 10omas         | 1a5            | 10omas         | dosel           | hierba,cemento\_pavimento | hojarasca,basura\_restos\_comida,ramas\_troncos |
+| p64  |       2 | suelo, herbáceas, no edificado ni cubierto | 10omas            | no hay a la vista | 1a5           | 1a5               | 10omas         | 10omas         | 10omas         | 10omas         | despejado       | hierba                    | basura\_restos\_comida                          |
+| p88  |       4 | dosel                                      | 10omas            | no hay a la vista | 1a5           | 10omas            | 0              | 10omas         | 1a5            | 1a5            | dosel           | hierba                    | no\_aplica                                      |
+
+Dendrograma:
+
+``` r
+dendro(mc = mcjorgemutonen_ord, k = 3)
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_jorgemutonen-1.png)<!-- -->
+
+PCoA:
+
+``` r
+pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.3)
+pcoa_jorgemutonen['grafico']
+## $grafico
+```
+
+<img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_jorgemutonen-1.png" width="1500" />
 
 Ir a [leyenda y significado del *biplot*](#leyenda).

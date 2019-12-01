@@ -1,15 +1,18 @@
 colus <- function(x){
+  #Consolida los nombres de las columnas "usuariohab" y "usuarionid" a "usuario"
   colnames(x) <- gsub('usuariohab|usuarionid', 'usuario', colnames(x))
   return(x)
 }
 
 usuarioanombre <- function(x) {
+  #Cambia los nombres de usuario de ODK por nombres de usuario legibles
   x <- x %>% 
     mutate(Nombre = gsub('uid\\:|\\|.*$', '', usuario))
   return(x)
 }
 
 n_parcelas <- function(x, pooled=F){
+  #Cuenta el número de parcelas por 
   require(tidyverse)
   x <- colus(x)
   x <- usuarioanombre(x)
@@ -82,7 +85,6 @@ mapa <- function(vari, filtusuario = NULL, fun = mean) {
           group_by(usuario, parcela) %>% summarise_if(is.factor, paste, collapse = ',')}
   parcelas <- parcelas %>% filter(grepl(filtusuario, usuario))
   parcelas <- parcelas %>% mutate_if(is.factor, droplevels)
-  # return(parcelas)
   m <- tm_shape(parcelas) +
     tm_fill(vari, alpha = 0.9) +
     tm_shape(parcelas) +
