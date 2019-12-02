@@ -300,7 +300,7 @@ maemdilone %>% kable
 Análisis exploratorios básicos:
 
 ```{r}
-mcemdilone %>% rowSums %>% length #Número de individuos por parcela
+mcemdilone %>% rowSums %>% length #Número de parcelas muestreadas
 mcemdilone %>% specnumber #Número de géneros por parcela
 mcemdilone %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
 mcemdilone %>% colSums %>% specnumber #Número de géneros total (pooled)
@@ -357,7 +357,7 @@ mabidelkiscastillo %>% kable
 Análisis exploratorios básicos:
 
 ```{r}
-mcbidelkiscastillo %>% rowSums %>% length #Número de individuos por parcela
+mcbidelkiscastillo %>% rowSums %>% length #Número de parcelas muestreadas
 mcbidelkiscastillo %>% specnumber #Número de géneros por parcela
 mcbidelkiscastillo %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
 mcbidelkiscastillo %>% colSums %>% specnumber #Número de géneros total (pooled)
@@ -415,7 +415,7 @@ majorgemutonen %>% kable
 Análisis exploratorios básicos:
 
 ```{r}
-mcjorgemutonen %>% rowSums %>% length #Número de individuos por parcela
+mcjorgemutonen %>% rowSums %>% length #Número de parcelas muestreadas
 mcjorgemutonen %>% specnumber #Número de géneros por parcela
 mcjorgemutonen %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
 mcjorgemutonen %>% colSums %>% specnumber #Número de géneros total (pooled)
@@ -451,8 +451,209 @@ dendro(mc = mcjorgemutonen_ord, k = 3)
 PCoA:
 
 ```{r pcoa_jorgemutonen, out.width=1500}
-pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.3)
+pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord,
+                            distmethod = 'gower', textoetiq = 2, p_max = 0.3)
 pcoa_jorgemutonen['grafico']
 ```
 
 Ir a [leyenda y significado del *biplot*](#leyenda).
+
+
+### Nidos
+
+#### Kesia, usuaria `maritzafg`
+
+```{r}
+mcmaritzafg_pa <- matriz_comunidad_nid_pa('maritzafg')
+mcmaritzafg_n <- matriz_comunidad_nid_n('maritzafg')
+mcmaritzafg_n <- mcmaritzafg_n[match(rownames(mcmaritzafg_pa), rownames(mcmaritzafg_n)),]
+mamaritzafg <- matriz_ambiental_nid('maritzafg')
+mamaritzafg <- mamaritzafg[match(rownames(mcmaritzafg_n), rownames(mamaritzafg)),]
+```
+
+```{r}
+mcmaritzafg_pa %>% kable
+mcmaritzafg_n %>% kable
+mamaritzafg %>% kable
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcmaritzafg_pa %>% rowSums %>% length #Número parcelas muestreadas
+mcmaritzafg_n %>% rowSums #Número de nidos por parcela
+mcmaritzafg_pa %>% specnumber #Número de géneros por parcela
+mcmaritzafg_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcmaritzafg_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcmaritzafg_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcmaritzafg_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_maritzafg}
+mcmaritzafg_sac <- specaccum(mcmaritzafg_pa)
+plot(mcmaritzafg_sac, ci.type="polygon", ci.col="yellow")
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcmaritzafg_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'maritzafg')
+mcmaritzafg_ord_nid_pa %>% kable
+mcmaritzafg_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'maritzafg')
+mcmaritzafg_ord_nid_n %>% kable
+mamaritzafg_ord <- ma_para_ord_nid(filtusuario = 'maritzafg', mc = mcmaritzafg_ord_nid_pa)
+mamaritzafg_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_maritzafg}
+dendro(mc = mcmaritzafg_ord_nid_pa, k = 3)
+```
+
+PCoA:
+
+```{r pcoa_maritzafg, out.width=1500}
+pcoa_maritzafg_nid_n <- pcoagg(mc = mcmaritzafg_ord_nid_n,
+                               ma = mamaritzafg_ord %>% dplyr::select(-matches('_min|_max')),
+                               distmethod = 'bray', textoetiq = 2, p_max = 0.15, includevectors = T)
+pcoa_maritzafg_nid_n['grafico']
+```
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Dahiana, usuaria `dahianagb07`
+
+```{r}
+mcdahianagb07_pa <- matriz_comunidad_nid_pa('dahianagb07')
+mcdahianagb07_n <- matriz_comunidad_nid_n('dahianagb07')
+mcdahianagb07_n <- mcdahianagb07_n[match(rownames(mcdahianagb07_pa), rownames(mcdahianagb07_n)),]
+madahianagb07 <- matriz_ambiental_nid('dahianagb07')
+madahianagb07 <- madahianagb07[match(rownames(mcdahianagb07_pa), rownames(madahianagb07)),]
+```
+
+```{r}
+mcdahianagb07_pa %>% kable
+mcdahianagb07_n %>% kable
+madahianagb07 %>% kable
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcdahianagb07_pa %>% rowSums %>% length #Número parcelas muestreadas
+mcdahianagb07_n %>% rowSums #Número de nidos por parcela
+mcdahianagb07_pa %>% specnumber #Número de géneros por parcela
+mcdahianagb07_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcdahianagb07_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcdahianagb07_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcdahianagb07_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_dahiana}
+mcdahianagb07_sac <- specaccum(mcdahianagb07_pa)
+plot(mcdahianagb07_sac, ci.type="polygon", ci.col="yellow")
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcdahianagb07_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'dahianagb07')
+mcdahianagb07_ord_nid_pa %>% kable
+mcdahianagb07_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'dahianagb07')
+mcdahianagb07_ord_nid_n %>% kable
+madahianagb07_ord <- ma_para_ord_nid(filtusuario = 'dahianagb07', mc = mcdahianagb07_ord_nid_pa)
+madahianagb07_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_dahiana}
+dendro(mc = mcdahianagb07_ord_nid_pa, k = 3)
+```
+
+PCoA:
+
+```{r pcoa_dahiana, out.width=1500}
+pcoa_dahianagb07_nid_pa <- pcoagg(mc = mcdahianagb07_ord_nid_pa,
+                                 ma = madahianagb07_ord %>% dplyr::select(-matches('_min|_max')),
+                                 distmethod = 'bray', textoetiq = 2, p_max = 0.3, includevectors = T)
+pcoa_dahianagb07_nid_pa['grafico']
+```
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+
+#### Enrique, usuario `enrique193`
+
+```{r}
+mcenrique193_pa <- matriz_comunidad_nid_pa('enrique193')
+mcenrique193_n <- matriz_comunidad_nid_n('enrique193')
+mcenrique193_n <- mcenrique193_n[match(rownames(mcenrique193_pa), rownames(mcenrique193_n)),]
+maenrique193 <- matriz_ambiental_nid('enrique193')
+maenrique193 <- maenrique193[match(rownames(mcenrique193_pa), rownames(maenrique193)),]
+```
+
+```{r}
+mcenrique193_pa %>% kable
+mcenrique193_n %>% kable
+maenrique193 %>% kable
+```
+
+Análisis exploratorios básicos:
+
+```{r}
+mcenrique193_pa %>% rowSums %>% length #Número parcelas muestreadas
+mcenrique193_n %>% rowSums #Número de nidos por parcela
+mcenrique193_pa %>% specnumber #Número de géneros por parcela
+mcenrique193_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+mcenrique193_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+mcenrique193_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+mcenrique193_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+```
+
+Curva de acumulación de especies:
+
+```{r curva_acumulacion_enrique}
+mcenrique193_sac <- specaccum(mcenrique193_pa)
+plot(mcenrique193_sac, ci.type="polygon", ci.col="yellow")
+```
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+```{r}
+mcenrique193_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'enrique193')
+mcenrique193_ord_nid_pa %>% kable
+mcenrique193_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'enrique193')
+mcenrique193_ord_nid_n %>% kable
+maenrique193_ord <- ma_para_ord_nid(filtusuario = 'enrique193', mc = mcenrique193_ord_nid_pa)
+maenrique193_ord %>% kable
+```
+
+Dendrograma:
+
+```{r dendro_enrique}
+dendro(mc = mcenrique193_ord_nid_pa, k = 3)
+```
+
+PCoA:
+
+```{r pcoa_enrique, out.width=1500}
+pcoa_enrique193_nid_pa <- pcoagg(mc = mcenrique193_ord_nid_pa,
+                                 ma = maenrique193_ord %>% dplyr::select(-matches('_min|_max')),
+                                 distmethod = 'bray', textoetiq = 2, p_max = 0.2, includevectors = T)
+pcoa_enrique193_nid_pa['grafico']
+```
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+

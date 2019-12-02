@@ -817,7 +817,7 @@ maemdilone %>% kable
 Análisis exploratorios básicos:
 
 ``` r
-mcemdilone %>% rowSums %>% length #Número de individuos por parcela
+mcemdilone %>% rowSums %>% length #Número de parcelas muestreadas
 ## [1] 11
 mcemdilone %>% specnumber #Número de géneros por parcela
 ## p107 p132 p134  p16 p171 p182  p24  p33  p40  p42  p97 
@@ -957,7 +957,7 @@ Análisis exploratorios
 básicos:
 
 ``` r
-mcbidelkiscastillo %>% rowSums %>% length #Número de individuos por parcela
+mcbidelkiscastillo %>% rowSums %>% length #Número de parcelas muestreadas
 ## [1] 11
 mcbidelkiscastillo %>% specnumber #Número de géneros por parcela
 ## p105 p122 p126 p160 p169  p17 p182 p187  p39  p53  p78 
@@ -1092,7 +1092,7 @@ majorgemutonen %>% kable
 Análisis exploratorios básicos:
 
 ``` r
-mcjorgemutonen %>% rowSums %>% length #Número de individuos por parcela
+mcjorgemutonen %>% rowSums %>% length #Número de parcelas muestreadas
 ## [1] 11
 mcjorgemutonen %>% specnumber #Número de géneros por parcela
 ## p135 p158 p182  p25  p28  p41  p44  p49  p54  p64  p88 
@@ -1175,11 +1175,548 @@ dendro(mc = mcjorgemutonen_ord, k = 3)
 PCoA:
 
 ``` r
-pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord, distmethod = 'gower', textoetiq = 2, p_max = 0.3)
+pcoa_jorgemutonen <- pcoagg(mc = mcjorgemutonen_ord, ma = majorgemutonen_ord,
+                            distmethod = 'gower', textoetiq = 2, p_max = 0.3)
 pcoa_jorgemutonen['grafico']
 ## $grafico
 ```
 
 <img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_jorgemutonen-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+### Nidos
+
+#### Kesia, usuaria `maritzafg`
+
+``` r
+mcmaritzafg_pa <- matriz_comunidad_nid_pa('maritzafg')
+mcmaritzafg_n <- matriz_comunidad_nid_n('maritzafg')
+mcmaritzafg_n <- mcmaritzafg_n[match(rownames(mcmaritzafg_pa), rownames(mcmaritzafg_n)),]
+mamaritzafg <- matriz_ambiental_nid('maritzafg')
+mamaritzafg <- mamaritzafg[match(rownames(mcmaritzafg_n), rownames(mamaritzafg)),]
+```
+
+``` r
+mcmaritzafg_pa %>% kable
+```
+
+|      | Brachymyrmex | Cardiocondyla | Dorymyrmex | Monomorium | Pheidole | Pseudomyrmex | Solenopsis |
+| ---- | -----------: | ------------: | ---------: | ---------: | -------: | -----------: | ---------: |
+| p106 |            0 |             0 |          0 |          0 |        0 |            0 |          0 |
+| p131 |            1 |             0 |          0 |          1 |        0 |            0 |          0 |
+| p143 |            1 |             0 |          0 |          0 |        0 |            0 |          1 |
+| p157 |            0 |             0 |          1 |          0 |        0 |            0 |          0 |
+| p160 |            1 |             0 |          1 |          0 |        1 |            1 |          1 |
+| p168 |            0 |             0 |          1 |          0 |        0 |            0 |          0 |
+| p179 |            1 |             0 |          1 |          0 |        0 |            0 |          1 |
+| p25  |            0 |             0 |          1 |          0 |        0 |            0 |          0 |
+| p27  |            1 |             0 |          1 |          0 |        0 |            0 |          1 |
+| p66  |            0 |             0 |          1 |          0 |        0 |            0 |          1 |
+| p78  |            1 |             1 |          1 |          0 |        1 |            0 |          0 |
+
+``` r
+mcmaritzafg_n %>% kable
+```
+
+|      | Brachymyrmex | Brachymyrmex+Dorymyrmex+Pheidole+Pseudomyrmex+Solenopsis | Brachymyrmex+Monomorium | Brachymyrmexheeri+Cardiocondyla | Cardiocondyla | Dorymyrmex | Dorymyrmex+Pheidole | Dorymyrmex+Solenopsis | Solenopsis |
+| ---- | -----------: | -------------------------------------------------------: | ----------------------: | ------------------------------: | ------------: | ---------: | ------------------: | --------------------: | ---------: |
+| p106 |            0 |                                                        0 |                       0 |                               0 |             0 |          0 |                   0 |                     0 |          0 |
+| p131 |            0 |                                                        0 |                       1 |                               0 |             0 |          0 |                   0 |                     0 |          0 |
+| p143 |            1 |                                                        0 |                       0 |                               0 |             0 |          0 |                   0 |                     0 |          1 |
+| p157 |            0 |                                                        0 |                       0 |                               0 |             0 |          1 |                   0 |                     0 |          0 |
+| p160 |            0 |                                                        1 |                       0 |                               0 |             0 |          0 |                   0 |                     0 |          0 |
+| p168 |            0 |                                                        0 |                       0 |                               0 |             0 |          1 |                   0 |                     0 |          0 |
+| p179 |            1 |                                                        0 |                       0 |                               0 |             0 |          1 |                   0 |                     0 |          1 |
+| p25  |            0 |                                                        0 |                       0 |                               0 |             0 |          1 |                   0 |                     0 |          0 |
+| p27  |            3 |                                                        0 |                       0 |                               0 |             0 |          2 |                   0 |                     1 |          2 |
+| p66  |            0 |                                                        0 |                       0 |                               0 |             0 |          1 |                   0 |                     0 |          2 |
+| p78  |            0 |                                                        0 |                       0 |                               1 |             1 |          1 |                   1 |                     0 |          0 |
+
+``` r
+mamaritzafg %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciavias\_6a9 | n\_nidos\_distanciavias\_10omas | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaagua\_1a5 | n\_nidos\_distanciaagua\_no hay a la vista | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | ---------------------------: | ---------------------------: | ------------------------------: | ---------------------------------: | ------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------: | -----------------------------------------: | :------------------------------------------------------ | -------: |
+| p106 |            0 |          0.000 |            0 |                            1 |                            0 |                               0 |                                  1 |                               0 |                               0 |                                             0 |                            1 |                                          0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p131 |            2 |          2.000 |            2 |                            1 |                            0 |                               0 |                                  0 |                               1 |                               0 |                                             0 |                            0 |                                          1 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p143 |            1 |          1.000 |            1 |                            2 |                            0 |                               0 |                                  2 |                               0 |                               0 |                                             0 |                            0 |                                          2 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p157 |            1 |          1.000 |            1 |                            0 |                            1 |                               0 |                                  1 |                               0 |                               0 |                                             0 |                            1 |                                          0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p160 |            5 |          5.000 |            5 |                            1 |                            0 |                               0 |                                  0 |                               1 |                               0 |                                             0 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p168 |            1 |          1.000 |            1 |                            1 |                            0 |                               0 |                                  0 |                               0 |                               1 |                                             0 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p179 |            1 |          1.000 |            1 |                            0 |                            0 |                               3 |                                  3 |                               0 |                               0 |                                             0 |                            3 |                                          0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p25  |            1 |          1.000 |            1 |                            1 |                            0 |                               0 |                                  0 |                               0 |                               0 |                                             1 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p27  |            1 |          1.125 |            2 |                            8 |                            0 |                               0 |                                  0 |                               8 |                               0 |                                             0 |                            0 |                                          8 | suelo, herbáceas, no edificado ni cubierto              |        8 |
+| p66  |            1 |          1.000 |            1 |                            3 |                            0 |                               0 |                                  3 |                               0 |                               0 |                                             0 |                            0 |                                          3 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p78  |            1 |          1.500 |            2 |                            4 |                            0 |                               0 |                                  0 |                               4 |                               0 |                                             0 |                            0 |                                          4 | pavimentado, acerado (bordes edificios, bancos, postes) |        4 |
+
+Análisis exploratorios básicos:
+
+``` r
+mcmaritzafg_pa %>% rowSums %>% length #Número parcelas muestreadas
+## [1] 11
+mcmaritzafg_n %>% rowSums #Número de nidos por parcela
+## p106 p131 p143 p157 p160 p168 p179  p25  p27  p66  p78 
+##    0    1    2    1    1    1    3    1    8    3    4
+mcmaritzafg_pa %>% specnumber #Número de géneros por parcela
+## p106 p131 p143 p157 p160 p168 p179  p25  p27  p66  p78 
+##    0    2    2    1    5    1    3    1    3    2    4
+mcmaritzafg_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+## p106 p157 p168  p25 p131 p143  p66 p179  p27  p78 p160 
+##    0    1    1    1    2    2    2    3    3    4    5
+mcmaritzafg_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+## [1] 7
+mcmaritzafg_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+## .
+## 0 1 2 3 4 5 
+## 1 3 3 2 1 1
+mcmaritzafg_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+## Cardiocondyla    Monomorium  Pseudomyrmex      Pheidole    Solenopsis 
+##             1             1             1             2             5 
+##  Brachymyrmex    Dorymyrmex 
+##             6             8
+```
+
+Curva de acumulación de especies:
+
+``` r
+mcmaritzafg_sac <- specaccum(mcmaritzafg_pa)
+plot(mcmaritzafg_sac, ci.type="polygon", ci.col="yellow")
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/curva_acumulacion_maritzafg-1.png)<!-- -->
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para ordenación:
+
+``` r
+mcmaritzafg_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'maritzafg')
+mcmaritzafg_ord_nid_pa %>% kable
+```
+
+|      | Brachymyrmex | Cardiocondyla | Dorymyrmex | Monomorium |  Pheidole | Pseudomyrmex | Solenopsis |
+| ---- | -----------: | ------------: | ---------: | ---------: | --------: | -----------: | ---------: |
+| p131 |    0.7071068 |           0.0 |  0.0000000 |  0.7071068 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p143 |    0.7071068 |           0.0 |  0.0000000 |  0.0000000 | 0.0000000 |    0.0000000 |  0.7071068 |
+| p157 |    0.0000000 |           0.0 |  1.0000000 |  0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p160 |    0.4472136 |           0.0 |  0.4472136 |  0.0000000 | 0.4472136 |    0.4472136 |  0.4472136 |
+| p168 |    0.0000000 |           0.0 |  1.0000000 |  0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p179 |    0.5773503 |           0.0 |  0.5773503 |  0.0000000 | 0.0000000 |    0.0000000 |  0.5773503 |
+| p25  |    0.0000000 |           0.0 |  1.0000000 |  0.0000000 | 0.0000000 |    0.0000000 |  0.0000000 |
+| p27  |    0.5773503 |           0.0 |  0.5773503 |  0.0000000 | 0.0000000 |    0.0000000 |  0.5773503 |
+| p66  |    0.0000000 |           0.0 |  0.7071068 |  0.0000000 | 0.0000000 |    0.0000000 |  0.7071068 |
+| p78  |    0.5000000 |           0.5 |  0.5000000 |  0.0000000 | 0.5000000 |    0.0000000 |  0.0000000 |
+
+``` r
+mcmaritzafg_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'maritzafg')
+mcmaritzafg_ord_nid_n %>% kable
+```
+
+|      | Brachymyrmex | Brachymyrmex+Dorymyrmex+Pheidole+Pseudomyrmex+Solenopsis | Brachymyrmex+Monomorium | Brachymyrmexheeri+Cardiocondyla | Cardiocondyla | Dorymyrmex | Dorymyrmex+Pheidole | Dorymyrmex+Solenopsis | Solenopsis |
+| ---- | -----------: | -------------------------------------------------------: | ----------------------: | ------------------------------: | ------------: | ---------: | ------------------: | --------------------: | ---------: |
+| p131 |    0.0000000 |                                                        0 |                       1 |                             0.0 |           0.0 |  0.0000000 |                 0.0 |             0.0000000 |  0.0000000 |
+| p143 |    0.7071068 |                                                        0 |                       0 |                             0.0 |           0.0 |  0.0000000 |                 0.0 |             0.0000000 |  0.7071068 |
+| p157 |    0.0000000 |                                                        0 |                       0 |                             0.0 |           0.0 |  1.0000000 |                 0.0 |             0.0000000 |  0.0000000 |
+| p160 |    0.0000000 |                                                        1 |                       0 |                             0.0 |           0.0 |  0.0000000 |                 0.0 |             0.0000000 |  0.0000000 |
+| p168 |    0.0000000 |                                                        0 |                       0 |                             0.0 |           0.0 |  1.0000000 |                 0.0 |             0.0000000 |  0.0000000 |
+| p179 |    0.5773503 |                                                        0 |                       0 |                             0.0 |           0.0 |  0.5773503 |                 0.0 |             0.0000000 |  0.5773503 |
+| p25  |    0.0000000 |                                                        0 |                       0 |                             0.0 |           0.0 |  1.0000000 |                 0.0 |             0.0000000 |  0.0000000 |
+| p27  |    0.6123724 |                                                        0 |                       0 |                             0.0 |           0.0 |  0.5000000 |                 0.0 |             0.3535534 |  0.5000000 |
+| p66  |    0.0000000 |                                                        0 |                       0 |                             0.0 |           0.0 |  0.5773503 |                 0.0 |             0.0000000 |  0.8164966 |
+| p78  |    0.0000000 |                                                        0 |                       0 |                             0.5 |           0.5 |  0.5000000 |                 0.5 |             0.0000000 |  0.0000000 |
+
+``` r
+mamaritzafg_ord <- ma_para_ord_nid(filtusuario = 'maritzafg', mc = mcmaritzafg_ord_nid_pa)
+mamaritzafg_ord %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciavias\_6a9 | n\_nidos\_distanciavias\_10omas | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaagua\_1a5 | n\_nidos\_distanciaagua\_no hay a la vista | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | ---------------------------: | ---------------------------: | ------------------------------: | ---------------------------------: | ------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------: | -----------------------------------------: | :------------------------------------------------------ | -------: |
+| p131 |            2 |          2.000 |            2 |                            1 |                            0 |                               0 |                                  0 |                               1 |                               0 |                                             0 |                            0 |                                          1 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p143 |            1 |          1.000 |            1 |                            2 |                            0 |                               0 |                                  2 |                               0 |                               0 |                                             0 |                            0 |                                          2 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p157 |            1 |          1.000 |            1 |                            0 |                            1 |                               0 |                                  1 |                               0 |                               0 |                                             0 |                            1 |                                          0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p160 |            5 |          5.000 |            5 |                            1 |                            0 |                               0 |                                  0 |                               1 |                               0 |                                             0 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p168 |            1 |          1.000 |            1 |                            1 |                            0 |                               0 |                                  0 |                               0 |                               1 |                                             0 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p179 |            1 |          1.000 |            1 |                            0 |                            0 |                               3 |                                  3 |                               0 |                               0 |                                             0 |                            3 |                                          0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p25  |            1 |          1.000 |            1 |                            1 |                            0 |                               0 |                                  0 |                               0 |                               0 |                                             1 |                            0 |                                          1 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p27  |            1 |          1.125 |            2 |                            8 |                            0 |                               0 |                                  0 |                               8 |                               0 |                                             0 |                            0 |                                          8 | suelo, herbáceas, no edificado ni cubierto              |        8 |
+| p66  |            1 |          1.000 |            1 |                            3 |                            0 |                               0 |                                  3 |                               0 |                               0 |                                             0 |                            0 |                                          3 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p78  |            1 |          1.500 |            2 |                            4 |                            0 |                               0 |                                  0 |                               4 |                               0 |                                             0 |                            0 |                                          4 | pavimentado, acerado (bordes edificios, bancos, postes) |        4 |
+
+Dendrograma:
+
+``` r
+dendro(mc = mcmaritzafg_ord_nid_pa, k = 3)
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_maritzafg-1.png)<!-- -->
+
+PCoA:
+
+``` r
+pcoa_maritzafg_nid_n <- pcoagg(mc = mcmaritzafg_ord_nid_n,
+                               ma = mamaritzafg_ord %>% dplyr::select(-matches('_min|_max')),
+                               distmethod = 'bray', textoetiq = 2, p_max = 0.15, includevectors = T)
+pcoa_maritzafg_nid_n['grafico']
+## $grafico
+```
+
+<img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_maritzafg-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Dahiana, usuaria `dahianagb07`
+
+``` r
+mcdahianagb07_pa <- matriz_comunidad_nid_pa('dahianagb07')
+mcdahianagb07_n <- matriz_comunidad_nid_n('dahianagb07')
+mcdahianagb07_n <- mcdahianagb07_n[match(rownames(mcdahianagb07_pa), rownames(mcdahianagb07_n)),]
+madahianagb07 <- matriz_ambiental_nid('dahianagb07')
+madahianagb07 <- madahianagb07[match(rownames(mcdahianagb07_pa), rownames(madahianagb07)),]
+```
+
+``` r
+mcdahianagb07_pa %>% kable
+```
+
+|      | Dorymyrmex | Paratrechina | Pheidole | Solenopsis |
+| ---- | ---------: | -----------: | -------: | ---------: |
+| p1   |          0 |            1 |        1 |          0 |
+| p10  |          1 |            1 |        0 |          1 |
+| p147 |          1 |            0 |        1 |          0 |
+| p148 |          0 |            0 |        1 |          0 |
+| p163 |          0 |            1 |        0 |          1 |
+| p25  |          0 |            0 |        1 |          1 |
+| p27  |          0 |            0 |        1 |          1 |
+| p42  |          1 |            0 |        0 |          1 |
+| p70  |          1 |            0 |        0 |          1 |
+| p78  |          1 |            0 |        0 |          0 |
+
+``` r
+mcdahianagb07_n %>% kable
+```
+
+|      | Dorymyrmex | Pheidole | Pheidole+Solenopsis | Solenopsis |
+| ---- | ---------: | -------: | ------------------: | ---------: |
+| p1   |          0 |        1 |                   0 |          0 |
+| p10  |          1 |        0 |                   0 |          1 |
+| p147 |          1 |        1 |                   0 |          0 |
+| p148 |          0 |        1 |                   0 |          0 |
+| p163 |          0 |        0 |                   0 |          1 |
+| p25  |          0 |        1 |                   0 |          2 |
+| p27  |          0 |        0 |                   1 |          1 |
+| p42  |          1 |        0 |                   0 |          1 |
+| p70  |          1 |        0 |                   0 |          2 |
+| p78  |          1 |        0 |                   0 |          0 |
+
+``` r
+madahianagb07 %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciavias\_6a9 | n\_nidos\_distanciavias\_10omas | n\_nidos\_distanciavias\_no hay a la vista | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaabasura\_no\_aplica | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaagua\_6a9 | n\_nidos\_distanciaagua\_no hay a la vista | n\_nidos\_distanciaagua\_no\_aplica | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | ---------------------------: | ---------------------------: | ------------------------------: | -----------------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------------: | -------------------------------------: | ------------------------------: | ---------------------------: | -----------------------------------------: | ----------------------------------: | :------------------------------------------------------ | -------: |
+| p1   |            1 |            1.0 |            1 |                            2 |                            1 |                               0 |                                          0 |                               2 |                                             1 |                                  0 |                                      0 |                               0 |                            1 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p10  |            1 |            1.0 |            1 |                            3 |                            0 |                               0 |                                          0 |                               2 |                                             0 |                                  1 |                                      0 |                               0 |                            1 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p147 |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               1 |                                             0 |                                  0 |                                      1 |                               0 |                            0 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p148 |            1 |            1.0 |            1 |                            1 |                            0 |                               0 |                                          0 |                               1 |                                             0 |                                  0 |                                      0 |                               0 |                            0 |                                          1 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p163 |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               0 |                                             0 |                                  0 |                                      0 |                               2 |                            0 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p25  |            1 |            1.0 |            1 |                            1 |                            1 |                               1 |                                          0 |                               0 |                                             1 |                                  1 |                                      0 |                               1 |                            0 |                                          3 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p27  |            1 |            1.5 |            2 |                            0 |                            1 |                               0 |                                          1 |                               1 |                                             1 |                                  0 |                                      0 |                               0 |                            0 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p42  |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               2 |                                             0 |                                  0 |                                      0 |                               0 |                            0 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p70  |            1 |            1.0 |            1 |                            3 |                            0 |                               0 |                                          0 |                               0 |                                             0 |                                  0 |                                      0 |                               3 |                            0 |                                          2 |                                   1 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p78  |            1 |            1.0 |            1 |                            1 |                            0 |                               0 |                                          0 |                               0 |                                             1 |                                  0 |                                      0 |                               0 |                            0 |                                          1 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+
+Análisis exploratorios básicos:
+
+``` r
+mcdahianagb07_pa %>% rowSums %>% length #Número parcelas muestreadas
+## [1] 10
+mcdahianagb07_n %>% rowSums #Número de nidos por parcela
+##   p1  p10 p147 p148 p163  p25  p27  p42  p70  p78 
+##    1    2    2    1    1    3    2    2    3    1
+mcdahianagb07_pa %>% specnumber #Número de géneros por parcela
+##   p1  p10 p147 p148 p163  p25  p27  p42  p70  p78 
+##    2    3    2    1    2    2    2    2    2    1
+mcdahianagb07_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+## p148  p78   p1 p147 p163  p25  p27  p42  p70  p10 
+##    1    1    2    2    2    2    2    2    2    3
+mcdahianagb07_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+## [1] 4
+mcdahianagb07_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+## .
+## 1 2 3 
+## 2 7 1
+mcdahianagb07_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+## Paratrechina   Dorymyrmex     Pheidole   Solenopsis 
+##            3            5            5            6
+```
+
+Curva de acumulación de especies:
+
+``` r
+mcdahianagb07_sac <- specaccum(mcdahianagb07_pa)
+plot(mcdahianagb07_sac, ci.type="polygon", ci.col="yellow")
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/curva_acumulacion_dahiana-1.png)<!-- -->
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para
+ordenación:
+
+``` r
+mcdahianagb07_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'dahianagb07')
+mcdahianagb07_ord_nid_pa %>% kable
+```
+
+|      | Dorymyrmex | Paratrechina |  Pheidole | Solenopsis |
+| ---- | ---------: | -----------: | --------: | ---------: |
+| p1   |  0.0000000 |    0.7071068 | 0.7071068 |  0.0000000 |
+| p10  |  0.5773503 |    0.5773503 | 0.0000000 |  0.5773503 |
+| p147 |  0.7071068 |    0.0000000 | 0.7071068 |  0.0000000 |
+| p148 |  0.0000000 |    0.0000000 | 1.0000000 |  0.0000000 |
+| p163 |  0.0000000 |    0.7071068 | 0.0000000 |  0.7071068 |
+| p25  |  0.0000000 |    0.0000000 | 0.7071068 |  0.7071068 |
+| p27  |  0.0000000 |    0.0000000 | 0.7071068 |  0.7071068 |
+| p42  |  0.7071068 |    0.0000000 | 0.0000000 |  0.7071068 |
+| p70  |  0.7071068 |    0.0000000 | 0.0000000 |  0.7071068 |
+| p78  |  1.0000000 |    0.0000000 | 0.0000000 |  0.0000000 |
+
+``` r
+mcdahianagb07_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'dahianagb07')
+mcdahianagb07_ord_nid_n %>% kable
+```
+
+|      | Dorymyrmex |  Pheidole | Pheidole+Solenopsis | Solenopsis |
+| ---- | ---------: | --------: | ------------------: | ---------: |
+| p1   |  0.0000000 | 1.0000000 |           0.0000000 |  0.0000000 |
+| p10  |  0.7071068 | 0.0000000 |           0.0000000 |  0.7071068 |
+| p147 |  0.7071068 | 0.7071068 |           0.0000000 |  0.0000000 |
+| p148 |  0.0000000 | 1.0000000 |           0.0000000 |  0.0000000 |
+| p163 |  0.0000000 | 0.0000000 |           0.0000000 |  1.0000000 |
+| p25  |  0.0000000 | 0.5773503 |           0.0000000 |  0.8164966 |
+| p27  |  0.0000000 | 0.0000000 |           0.7071068 |  0.7071068 |
+| p42  |  0.7071068 | 0.0000000 |           0.0000000 |  0.7071068 |
+| p70  |  0.5773503 | 0.0000000 |           0.0000000 |  0.8164966 |
+| p78  |  1.0000000 | 0.0000000 |           0.0000000 |  0.0000000 |
+
+``` r
+madahianagb07_ord <- ma_para_ord_nid(filtusuario = 'dahianagb07', mc = mcdahianagb07_ord_nid_pa)
+madahianagb07_ord %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciavias\_6a9 | n\_nidos\_distanciavias\_10omas | n\_nidos\_distanciavias\_no hay a la vista | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaabasura\_no\_aplica | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaagua\_6a9 | n\_nidos\_distanciaagua\_no hay a la vista | n\_nidos\_distanciaagua\_no\_aplica | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | ---------------------------: | ---------------------------: | ------------------------------: | -----------------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------------: | -------------------------------------: | ------------------------------: | ---------------------------: | -----------------------------------------: | ----------------------------------: | :------------------------------------------------------ | -------: |
+| p1   |            1 |            1.0 |            1 |                            2 |                            1 |                               0 |                                          0 |                               2 |                                             1 |                                  0 |                                      0 |                               0 |                            1 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p10  |            1 |            1.0 |            1 |                            3 |                            0 |                               0 |                                          0 |                               2 |                                             0 |                                  1 |                                      0 |                               0 |                            1 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p147 |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               1 |                                             0 |                                  0 |                                      1 |                               0 |                            0 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p148 |            1 |            1.0 |            1 |                            1 |                            0 |                               0 |                                          0 |                               1 |                                             0 |                                  0 |                                      0 |                               0 |                            0 |                                          1 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+| p163 |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               0 |                                             0 |                                  0 |                                      0 |                               2 |                            0 |                                          2 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p25  |            1 |            1.0 |            1 |                            1 |                            1 |                               1 |                                          0 |                               0 |                                             1 |                                  1 |                                      0 |                               1 |                            0 |                                          3 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p27  |            1 |            1.5 |            2 |                            0 |                            1 |                               0 |                                          1 |                               1 |                                             1 |                                  0 |                                      0 |                               0 |                            0 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p42  |            1 |            1.0 |            1 |                            2 |                            0 |                               0 |                                          0 |                               2 |                                             0 |                                  0 |                                      0 |                               0 |                            0 |                                          2 |                                   0 | suelo, herbáceas, no edificado ni cubierto              |        2 |
+| p70  |            1 |            1.0 |            1 |                            3 |                            0 |                               0 |                                          0 |                               0 |                                             0 |                                  0 |                                      0 |                               3 |                            0 |                                          2 |                                   1 | suelo, herbáceas, no edificado ni cubierto              |        3 |
+| p78  |            1 |            1.0 |            1 |                            1 |                            0 |                               0 |                                          0 |                               0 |                                             1 |                                  0 |                                      0 |                               0 |                            0 |                                          1 |                                   0 | pavimentado, acerado (bordes edificios, bancos, postes) |        1 |
+
+Dendrograma:
+
+``` r
+dendro(mc = mcdahianagb07_ord_nid_pa, k = 3)
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_dahiana-1.png)<!-- -->
+
+PCoA:
+
+``` r
+pcoa_dahianagb07_nid_pa <- pcoagg(mc = mcdahianagb07_ord_nid_pa,
+                                 ma = madahianagb07_ord %>% dplyr::select(-matches('_min|_max')),
+                                 distmethod = 'bray', textoetiq = 2, p_max = 0.3, includevectors = T)
+pcoa_dahianagb07_nid_pa['grafico']
+## $grafico
+```
+
+<img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_dahiana-1.png" width="1500" />
+
+Ir a [leyenda y significado del *biplot*](#leyenda).
+
+#### Enrique, usuario `enrique193`
+
+``` r
+mcenrique193_pa <- matriz_comunidad_nid_pa('enrique193')
+mcenrique193_n <- matriz_comunidad_nid_n('enrique193')
+mcenrique193_n <- mcenrique193_n[match(rownames(mcenrique193_pa), rownames(mcenrique193_n)),]
+maenrique193 <- matriz_ambiental_nid('enrique193')
+maenrique193 <- maenrique193[match(rownames(mcenrique193_pa), rownames(maenrique193)),]
+```
+
+``` r
+mcenrique193_pa %>% kable
+```
+
+|      | Monomorium | Paratrechina | Solenopsis |
+| ---- | ---------: | -----------: | ---------: |
+| p109 |          0 |            0 |          0 |
+| p151 |          0 |            1 |          0 |
+| p159 |          0 |            0 |          0 |
+| p166 |          0 |            1 |          1 |
+| p167 |          1 |            0 |          1 |
+| p170 |          0 |            0 |          0 |
+| p21  |          1 |            0 |          1 |
+| p22  |          1 |            0 |          0 |
+| p42  |          1 |            1 |          1 |
+| p68  |          0 |            0 |          0 |
+| p77  |          0 |            0 |          1 |
+| p81  |          0 |            0 |          0 |
+| p86  |          0 |            0 |          1 |
+
+``` r
+mcenrique193_n %>% kable
+```
+
+|      | Monomorium | Monomorium+Solenopsis | Solenopsis |
+| ---- | ---------: | --------------------: | ---------: |
+| p109 |          0 |                     0 |          0 |
+| p151 |          0 |                     0 |          0 |
+| p159 |          0 |                     0 |          0 |
+| p166 |          0 |                     0 |          3 |
+| p167 |          1 |                     0 |          2 |
+| p170 |          0 |                     0 |          0 |
+| p21  |          1 |                     0 |          1 |
+| p22  |          1 |                     0 |          0 |
+| p42  |          0 |                     1 |          2 |
+| p68  |          0 |                     0 |          0 |
+| p77  |          0 |                     0 |          1 |
+| p81  |          0 |                     0 |          0 |
+| p86  |          0 |                     0 |          1 |
+
+``` r
+maenrique193 %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_NA | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciaabasura\_NA | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaagua\_NA | n\_nidos\_distanciaagua\_no hay a la vista | n\_nidos\_distanciaagua\_1a5 | n\_nidos\_distanciaagua\_6a9 | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | --------------------------: | ---------------------------: | -----------------------------: | ------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------------: | --------------------------: | -----------------------------------------: | ---------------------------: | ---------------------------: | :------------------------------------------------------ | -------: |
+| p109 |            0 |           0.00 |            0 |                           1 |                            0 |                              1 |                               0 |                               0 |                                             0 |                                  0 |                           1 |                                          0 |                            0 |                            0 | dosel                                                   |        1 |
+| p151 |            1 |           1.00 |            1 |                           0 |                            2 |                              0 |                               2 |                               0 |                                             0 |                                  0 |                           0 |                                          2 |                            0 |                            0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p159 |            0 |           0.00 |            0 |                           1 |                            0 |                              1 |                               0 |                               0 |                                             0 |                                  0 |                           1 |                                          0 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p166 |            1 |           1.00 |            1 |                           0 |                            4 |                              0 |                               3 |                               1 |                                             0 |                                  0 |                           0 |                                          0 |                            2 |                            2 | edificación erguida                                     |        4 |
+| p167 |            1 |           1.00 |            1 |                           0 |                            3 |                              0 |                               2 |                               0 |                                             1 |                                  0 |                           0 |                                          3 |                            0 |                            0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p170 |            0 |           0.00 |            0 |                           1 |                            0 |                              1 |                               0 |                               0 |                                             0 |                                  0 |                           1 |                                          0 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p21  |            1 |           1.00 |            1 |                           0 |                            2 |                              0 |                               2 |                               0 |                                             0 |                                  0 |                           0 |                                          2 |                            0 |                            0 | edificación erguida                                     |        2 |
+| p22  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               1 |                               0 |                                             0 |                                  0 |                           0 |                                          1 |                            0 |                            0 | edificación erguida                                     |        1 |
+| p42  |            1 |           1.25 |            2 |                           0 |                            4 |                              0 |                               4 |                               0 |                                             0 |                                  0 |                           0 |                                          3 |                            1 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        4 |
+| p68  |            0 |           0.00 |            0 |                           1 |                            0 |                              1 |                               0 |                               0 |                                             0 |                                  0 |                           1 |                                          0 |                            0 |                            0 | edificación erguida                                     |        1 |
+| p77  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               0 |                               0 |                                             0 |                                  1 |                           0 |                                          1 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p81  |            0 |           0.00 |            0 |                           1 |                            0 |                              1 |                               0 |                               0 |                                             0 |                                  0 |                           1 |                                          0 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p86  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               0 |                               1 |                                             0 |                                  0 |                           0 |                                          1 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+
+Análisis exploratorios básicos:
+
+``` r
+mcenrique193_pa %>% rowSums %>% length #Número parcelas muestreadas
+## [1] 13
+mcenrique193_n %>% rowSums #Número de nidos por parcela
+## p109 p151 p159 p166 p167 p170  p21  p22  p42  p68  p77  p81  p86 
+##    0    0    0    3    3    0    2    1    3    0    1    0    1
+mcenrique193_pa %>% specnumber #Número de géneros por parcela
+## p109 p151 p159 p166 p167 p170  p21  p22  p42  p68  p77  p81  p86 
+##    0    1    0    2    2    0    2    1    3    0    1    0    1
+mcenrique193_pa %>% specnumber %>% sort #Número de géneros por parcela ordenados ascendentemente
+## p109 p159 p170  p68  p81 p151  p22  p77  p86 p166 p167  p21  p42 
+##    0    0    0    0    0    1    1    1    1    2    2    2    3
+mcenrique193_pa %>% colSums %>% specnumber #Número de géneros total (pooled)
+## [1] 3
+mcenrique193_pa %>% rowSums %>% table #Número de parcelas según conteo de géneros
+## .
+## 0 1 2 3 
+## 5 4 3 1
+mcenrique193_pa %>% colSums %>% sort #Número de parcelas en las que aparece cada género
+## Paratrechina   Monomorium   Solenopsis 
+##            3            4            6
+```
+
+Curva de acumulación de especies:
+
+``` r
+mcenrique193_sac <- specaccum(mcenrique193_pa)
+plot(mcenrique193_sac, ci.type="polygon", ci.col="yellow")
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/curva_acumulacion_enrique-1.png)<!-- -->
+
+##### Ordenación: dendrograma y PCoA
+
+Generar matrices de comunidad y ambiental para
+ordenación:
+
+``` r
+mcenrique193_ord_nid_pa <- mc_para_ord_nid_pa(filtusuario = 'enrique193')
+mcenrique193_ord_nid_pa %>% kable
+```
+
+|      | Monomorium | Paratrechina | Solenopsis |
+| ---- | ---------: | -----------: | ---------: |
+| p151 |  0.0000000 |    1.0000000 |  0.0000000 |
+| p166 |  0.0000000 |    0.7071068 |  0.7071068 |
+| p167 |  0.7071068 |    0.0000000 |  0.7071068 |
+| p21  |  0.7071068 |    0.0000000 |  0.7071068 |
+| p22  |  1.0000000 |    0.0000000 |  0.0000000 |
+| p42  |  0.5773503 |    0.5773503 |  0.5773503 |
+| p77  |  0.0000000 |    0.0000000 |  1.0000000 |
+| p86  |  0.0000000 |    0.0000000 |  1.0000000 |
+
+``` r
+mcenrique193_ord_nid_n <- mc_para_ord_nid_n(filtusuario = 'enrique193')
+mcenrique193_ord_nid_n %>% kable
+```
+
+|      | Monomorium | Monomorium+Solenopsis | Solenopsis |
+| ---- | ---------: | --------------------: | ---------: |
+| p166 |  0.0000000 |             0.0000000 |  1.0000000 |
+| p167 |  0.5773503 |             0.0000000 |  0.8164966 |
+| p21  |  0.7071068 |             0.0000000 |  0.7071068 |
+| p22  |  1.0000000 |             0.0000000 |  0.0000000 |
+| p42  |  0.0000000 |             0.5773503 |  0.8164966 |
+| p77  |  0.0000000 |             0.0000000 |  1.0000000 |
+| p86  |  0.0000000 |             0.0000000 |  1.0000000 |
+
+``` r
+maenrique193_ord <- ma_para_ord_nid(filtusuario = 'enrique193', mc = mcenrique193_ord_nid_pa)
+maenrique193_ord %>% kable
+```
+
+|      | riqueza\_min | riqueza\_media | riqueza\_max | n\_nidos\_distanciavias\_NA | n\_nidos\_distanciavias\_1a5 | n\_nidos\_distanciaabasura\_NA | n\_nidos\_distanciaabasura\_1a5 | n\_nidos\_distanciaabasura\_6a9 | n\_nidos\_distanciaabasura\_no hay a la vista | n\_nidos\_distanciaabasura\_10omas | n\_nidos\_distanciaagua\_NA | n\_nidos\_distanciaagua\_no hay a la vista | n\_nidos\_distanciaagua\_1a5 | n\_nidos\_distanciaagua\_6a9 | tipo                                                    | n\_nidos |
+| ---- | -----------: | -------------: | -----------: | --------------------------: | ---------------------------: | -----------------------------: | ------------------------------: | ------------------------------: | --------------------------------------------: | ---------------------------------: | --------------------------: | -----------------------------------------: | ---------------------------: | ---------------------------: | :------------------------------------------------------ | -------: |
+| p151 |            1 |           1.00 |            1 |                           0 |                            2 |                              0 |                               2 |                               0 |                                             0 |                                  0 |                           0 |                                          2 |                            0 |                            0 | pavimentado, acerado (bordes edificios, bancos, postes) |        2 |
+| p166 |            1 |           1.00 |            1 |                           0 |                            4 |                              0 |                               3 |                               1 |                                             0 |                                  0 |                           0 |                                          0 |                            2 |                            2 | edificación erguida                                     |        4 |
+| p167 |            1 |           1.00 |            1 |                           0 |                            3 |                              0 |                               2 |                               0 |                                             1 |                                  0 |                           0 |                                          3 |                            0 |                            0 | pavimentado, acerado (bordes edificios, bancos, postes) |        3 |
+| p21  |            1 |           1.00 |            1 |                           0 |                            2 |                              0 |                               2 |                               0 |                                             0 |                                  0 |                           0 |                                          2 |                            0 |                            0 | edificación erguida                                     |        2 |
+| p22  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               1 |                               0 |                                             0 |                                  0 |                           0 |                                          1 |                            0 |                            0 | edificación erguida                                     |        1 |
+| p42  |            1 |           1.25 |            2 |                           0 |                            4 |                              0 |                               4 |                               0 |                                             0 |                                  0 |                           0 |                                          3 |                            1 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        4 |
+| p77  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               0 |                               0 |                                             0 |                                  1 |                           0 |                                          1 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+| p86  |            1 |           1.00 |            1 |                           0 |                            1 |                              0 |                               0 |                               1 |                                             0 |                                  0 |                           0 |                                          1 |                            0 |                            0 | suelo, herbáceas, no edificado ni cubierto              |        1 |
+
+Dendrograma:
+
+``` r
+dendro(mc = mcenrique193_ord_nid_pa, k = 3)
+```
+
+![](analisis-exploratorio-ecologico_files/figure-gfm/dendro_enrique-1.png)<!-- -->
+
+PCoA:
+
+``` r
+pcoa_enrique193_nid_pa <- pcoagg(mc = mcenrique193_ord_nid_pa,
+                                 ma = maenrique193_ord %>% dplyr::select(-matches('_min|_max')),
+                                 distmethod = 'bray', textoetiq = 2, p_max = 0.2, includevectors = T)
+pcoa_enrique193_nid_pa['grafico']
+## $grafico
+```
+
+<img src="analisis-exploratorio-ecologico_files/figure-gfm/pcoa_enrique-1.png" width="1500" />
 
 Ir a [leyenda y significado del *biplot*](#leyenda).
